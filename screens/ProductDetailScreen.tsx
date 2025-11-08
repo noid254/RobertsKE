@@ -1,0 +1,214 @@
+import React, { useState, useContext } from 'react';
+import Header from '../components/Header';
+import StarRating from '../components/StarRating';
+import ProductCard from '../components/ProductCard';
+import { type Product, type ProductVariant } from '../types';
+import { HeartIcon, WhatsAppIcon } from '../constants';
+import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
+import { useSavedItems } from '../context/SavedItemsContext';
+import { USERS } from '../constants';
+
+interface ProductDetailScreenProps {
+  product: Product;
+  onBack: () => void;
+  onNavigate: (view: any, payload?: any) => void;
+  onSearch: (query: string) => void;
+  allProducts: Product[];
+  onProductClick: (product: Product) => void;
+}
+
+const formatPrice = (price: number) => {
+    return `KES ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBack, onNavigate, onSearch, allProducts, onProductClick }) => {
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
+  const [mainImage, setMainImage] = useState<string>(product.variants[0].images[0]);
+  const { addToCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+  const { addSavedItem, removeSavedItem, isSaved } = useSavedItems();
+  
+  const creator = USERS.find(u => u.phone === product.creatorId);
+
+  const relatedProducts = allProducts.filter(p => p.id !== product.id && p.category === product.category).slice(0, 4);
+
+  const handleVariantSelect = (variant: ProductVariant) => {
+    setSelectedVariant(variant);
+    setMainImage(variant.images[0]);
+  }
+
+  const handleToggleSavedItem = () => {
+    if (isSaved(product.id)) {
+      removeSavedItem(product.id);
+    } else {
+      addSavedItem(product);
+    }
+  };
+
+  const getPrice = () => {
+    let currentPrice = product.price;
+    if (product.sale) {
+        currentPrice = product.price * (1 - product.sale.discount);
+    } else if (product.preOrder) {
+        currentPrice = product.price * (1 - product.preOrder.discount);
+    }
+    return currentPrice;
+  }
+
+  const finalPrice = getPrice();
+  const stockStatus = selectedVariant.stock;
+
+  return (
+    <div className="bg-white min-h-screen">
+      <Header 
+        onBack={onBack} 
+        onNavigate={onNavigate}
+        onSearch={onSearch}
+        isSticky={true} 
+      />
+      <main className="pt-16 lg:pt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+                {/* Image Gallery */}
+                <div className="flex flex-col gap-4">
+                    <div className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden">
+                        <img src={mainImage} alt={product.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="grid grid-cols-4 gap-4">
+                        {selectedVariant.images.slice(0, 4).map((img, index) => (
+                        <div key={index} className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer" onClick={() => setMainImage(img)}>
+                            <img 
+                                src={img} 
+                                alt={`${product.name} thumbnail ${index + 1}`} 
+                                className={`w-full h-full object-cover transition-all duration-300 ${img === mainImage ? 'opacity-100 scale-105' : 'opacity-70 hover:opacity-100'}`} 
+                            />
+                        </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Product Info */}
+                <div className="mt-6 lg:mt-0">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">{product.name}</h1>
+                            <div className="flex items-center mt-2">
+                            <StarRating rating={product.rating} />
+                            <span className="text-xs text-gray-500 ml-2">({product.reviewCount} reviews)</span>
+                            </div>
+                        </div>
+                        <button onClick={handleToggleSavedItem} className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
+                            <HeartIcon 
+                                className={`w-6 h-6 ${isSaved(product.id) ? 'text-red-500' : 'text-gray-600'}`} 
+                                isFilled={isSaved(product.id)}
+                            />
+                        </button>
+                    </div>
+
+                    <div className="my-4">
+                        <span className="text-3xl font-bold text-gray-900">{formatPrice(finalPrice)}</span>
+                        {(product.sale || product.preOrder) && (
+                            <span className="text-xl text-gray-400 line-through ml-2">{formatPrice(product.price)}</span>
+                        )}
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                        {product.description}
+                    </p>
+
+                    <div className="space-y-6">
+                        {product.variants.length > 1 && (
+                        <div>
+                            <p className="text-sm font-semibold text-gray-700 mb-2">Color: <span className="font-normal">{selectedVariant.colorName}</span></p>
+                            <div className="flex items-center space-x-2">
+                                {product.variants.map((variant) => (
+                                    <button 
+                                        key={variant.colorName} 
+                                        style={{ backgroundColor: variant.color }} 
+                                        className={`w-8 h-8 rounded-full border-2 ${selectedVariant.colorName === variant.colorName ? 'border-gray-800' : (variant.color === '#EAEAEA' || variant.color === '#FFFFFF' || variant.color === 'transparent' ? 'border-gray-300' : 'border-transparent') } focus:outline-none ring-2 ring-offset-2 ring-transparent focus:ring-gray-800 transition-all`}
+                                        onClick={() => handleVariantSelect(variant)}
+                                        title={variant.colorName}
+                                    ></button>
+                                ))}
+                            </div>
+                        </div>
+                        )}
+
+                        <div className="hidden lg:block">
+                            <button 
+                                className="w-full py-3 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                onClick={() => addToCart({ product: { ...product }, selectedVariant, quantity: 1})}
+                                disabled={stockStatus <= 0}
+                            >
+                                {stockStatus > 0 ? 'Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+            {/* Reviews Section */}
+            <section className="mt-12 lg:mt-16 pt-8 border-t">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Customer Reviews</h2>
+                {product.reviews.length > 0 ? (
+                    <div className="space-y-6">
+                        {product.reviews.map(review => (
+                            <div key={review.id} className="border-b pb-4">
+                                <div className="flex items-center mb-2">
+                                    <img src={review.avatarUrl} alt={review.author} className="w-10 h-10 rounded-full object-cover mr-3" />
+                                    <div>
+                                        <p className="font-semibold">{review.author}</p>
+                                        <StarRating rating={review.rating} />
+                                    </div>
+                                    <p className="text-xs text-gray-400 ml-auto">{review.date}</p>
+                                </div>
+                                <p className="text-sm text-gray-600">{review.comment}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-sm text-gray-500">No reviews yet. Be the first to share your thoughts!</p>
+                )}
+
+                {user && (
+                    <div className="mt-8">
+                        <h3 className="font-semibold text-gray-800 mb-2">Write a Review</h3>
+                        <form onSubmit={e => e.preventDefault()}>
+                            <textarea className="w-full p-3 border rounded-md text-sm" placeholder="Share your experience..."></textarea>
+                            <button className="mt-2 bg-gray-800 text-white py-2 px-6 rounded-full font-semibold text-sm">Submit Review</button>
+                        </form>
+                    </div>
+                )}
+            </section>
+        </div>
+
+        {/* You Might Also Like */}
+        <section className="mt-12 lg:mt-16 py-12 lg:py-16 bg-[#F9F5F0]">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 text-center">You Might Also Like</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-6 lg:gap-x-6 lg:gap-y-10 mt-8">
+                    {relatedProducts.map(relatedProduct => (
+                        <ProductCard key={relatedProduct.id} product={relatedProduct} onClick={() => onProductClick(relatedProduct)} />
+                    ))}
+                </div>
+            </div>
+        </section>
+      </main>
+
+      <footer className="sticky bottom-0 left-0 right-0 bg-white/80 p-4 border-t border-gray-200 z-30 backdrop-blur-sm lg:hidden">
+        <div className="container mx-auto px-4 sm:px-6">
+            <button 
+                className="w-full py-3 border border-gray-800 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                onClick={() => addToCart({ product: { ...product }, selectedVariant, quantity: 1})}
+                disabled={stockStatus <= 0}
+                >
+                {stockStatus > 0 ? 'Add to cart' : 'Out of Stock'}
+            </button>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default ProductDetailScreen;

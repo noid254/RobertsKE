@@ -1,0 +1,21 @@
+{
+  "short_name": "Roberts",
+  "name": "Roberts Indoor Solutions",
+  "description": "Discover unique and sustainable home decor at Roberts Indoor Solutions, Nairobi's top choice for furniture, lighting, and interior design services.",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#F9F5F0",
+  "background_color": "#F9F5F0"
+}
