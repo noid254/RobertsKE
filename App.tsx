@@ -23,13 +23,139 @@ import CreatorProfileScreen from './screens/CreatorProfileScreen';
 import Footer from './components/Footer';
 import NewsletterModal from './components/NewsletterModal';
 
-
-import { type Product, type PreOrderCategory, type SearchState, type BlogPost, type RoomCategory, type User, type Order } from './types';
-import { BLOG_POSTS, ROOM_CATEGORIES, USERS, ORDERS, DESIGN_SERVICES } from './constants';
+import { type Product, type PreOrderCategory, type SearchState, type BlogPost, type RoomCategory, type User, type Order, HomeBanner } from './types';
+import { BLOG_POSTS, ROOM_CATEGORIES, USERS, ORDERS, DESIGN_SERVICES, HOME_BANNERS, CloseIcon } from './constants';
 import { CartProvider } from './context/CartContext';
 import { SavedItemsProvider } from './context/SavedItemsContext';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { fetchProducts } from './api';
+
+
+type AdminEditItem = {
+    type: 'banner' | 'category';
+    data: any;
+    isNew?: boolean;
+}
+
+const AdminEditModal: React.FC<{
+    item: AdminEditItem;
+    onClose: () => void;
+    onSave: (updatedData: any) => void;
+}> = ({ item, onClose, onSave }) => {
+    const { type, data, isNew } = item;
+    const [formData, setFormData] = useState(data);
+
+    useEffect(() => {
+      // Initialize form data when item changes
+      if (isNew && type === 'category') {
+        setFormData({ name: '', description: '', imageUrl: '', subCategories: ['All'], hero: { title: '', subtitle: '', imageUrl: '' } });
+      } else {
+        setFormData(data);
+      }
+    }, [item]);
+
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, parentKey?: string) => {
+        const { name, value } = e.target;
+        if (parentKey) {
+            setFormData((prev: any) => ({
+                ...prev,
+                [parentKey]: {
+                    ...prev[parentKey],
+                    [name]: value,
+                },
+            }));
+        } else {
+            setFormData((prev: any) => ({ ...prev, [name]: value }));
+        }
+    };
+    
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, parentKey?: string, fieldName: string = 'imageUrl') => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                if (parentKey) {
+                    setFormData((prev: any) => ({
+                        ...prev,
+                        [parentKey]: { ...prev[parentKey], [fieldName]: result }
+                    }));
+                } else {
+                    setFormData(prev => ({ ...prev, [fieldName]: result }));
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handleSave = (e: React.FormEvent) => {
+        e.preventDefault();
+        // NOTE: For file uploads, the `imageUrl` will be a base64 Data URL.
+        // For this to be persistent, a backend endpoint would be needed to
+        // upload this data, save it to WordPress media library, and return a permanent URL.
+        onSave(formData);
+        onClose();
+    };
+
+    const renderBannerForm = () => (
+        <>
+            <h2 className="text-xl font-bold mb-4">Edit Banner</h2>
+            <div className="space-y-2">
+                <div><label className="text-xs font-semibold">Title</label><input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full p-2 border rounded"/></div>
+                <div><label className="text-xs font-semibold">Subtitle</label><input type="text" name="subtitle" value={formData.subtitle} onChange={handleChange} className="w-full p-2 border rounded"/></div>
+                <div>
+                    <label className="text-xs font-semibold">Banner Image</label>
+                    {formData.imageUrl && <img src={formData.imageUrl} alt="Banner preview" className="mt-1 w-full h-32 object-cover rounded" />}
+                    <input type="file" name="imageFile" accept="image/*" onChange={(e) => handleFileChange(e)} className="w-full text-sm mt-1"/>
+                    <p className="text-xs text-gray-500 mt-1">Upload a new image to replace the current one.</p>
+                </div>
+                <div><label className="text-xs font-semibold">Button Text</label><input type="text" name="buttonText" value={formData.buttonText} onChange={handleChange} className="w-full p-2 border rounded"/></div>
+            </div>
+        </>
+    );
+
+    const renderCategoryForm = () => (
+         <>
+            <h2 className="text-xl font-bold mb-4">{isNew ? 'Add' : 'Edit'} Category</h2>
+            <div className="space-y-2 text-sm">
+                <div><label className="font-semibold">Name</label><input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full p-2 border rounded"/></div>
+                <div><label className="font-semibold">Description</label><input type="text" name="description" value={formData.description} onChange={handleChange} className="w-full p-2 border rounded"/></div>
+                <div>
+                    <label className="font-semibold">Image URL</label>
+                    {formData.imageUrl && <img src={formData.imageUrl} alt="Category preview" className="mt-1 w-full h-32 object-cover rounded" />}
+                    <input type="file" name="imageFile" accept="image/*" onChange={(e) => handleFileChange(e)} className="w-full text-sm mt-1"/>
+                </div>
+                <div className="pt-2 mt-2 border-t">
+                    <h3 className="font-bold">Hero Section</h3>
+                    <div><label className="font-semibold">Hero Title</label><input type="text" name="title" value={formData.hero.title} onChange={(e) => handleChange(e, 'hero')} className="w-full p-2 border rounded"/></div>
+                    <div><label className="font-semibold">Hero Subtitle</label><input type="text" name="subtitle" value={formData.hero.subtitle} onChange={(e) => handleChange(e, 'hero')} className="w-full p-2 border rounded"/></div>
+                    <div>
+                        <label className="font-semibold">Hero Image URL</label>
+                        {formData.hero?.imageUrl && <img src={formData.hero.imageUrl} alt="Hero preview" className="mt-1 w-full h-32 object-cover rounded" />}
+                         <input type="file" name="imageFile" accept="image/*" onChange={(e) => handleFileChange(e, 'hero')} className="w-full text-sm mt-1"/>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full relative shadow-xl max-h-[90vh] overflow-y-auto">
+                <button onClick={onClose} className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600">
+                    <CloseIcon className="w-6 h-6" />
+                </button>
+                <form onSubmit={handleSave}>
+                    {type === 'banner' && renderBannerForm()}
+                    {type === 'category' && renderCategoryForm()}
+                    <button type="submit" className="w-full mt-4 bg-gray-800 text-white py-2 rounded-full font-semibold">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    );
+}
+
 
 type View = 
   | { name: 'home' }
@@ -63,15 +189,48 @@ const AppContent: React.FC = () => {
   const [installPromptEvent, setInstallPromptEvent] = useState<any | null>(null);
   const [isInstallPromptVisible, setIsInstallPromptVisible] = useState(false);
   const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false);
+  
+  // Admin editable state
+  const [roomCategories, setRoomCategories] = useState<RoomCategory[]>(ROOM_CATEGORIES);
+  const [homeBanners, setHomeBanners] = useState<HomeBanner[]>(HOME_BANNERS);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(BLOG_POSTS);
+  const [editingItem, setEditingItem] = useState<AdminEditItem | null>(null);
+  
   const currentView = history[history.length - 1];
 
   useEffect(() => {
+    const CACHE_EXPIRY = 60 * 60 * 1000; // 1 hour in milliseconds
+
     const loadProducts = async () => {
+      // Check cache first to improve load speed on subsequent visits.
       try {
-        setIsLoading(true);
+        const cachedDataJSON = localStorage.getItem('roberts-products-cache');
+        if (cachedDataJSON) {
+          const { products: cachedProducts, timestamp } = JSON.parse(cachedDataJSON);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setProducts(cachedProducts);
+            setIsLoading(false);
+            return; // Use cached data
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load products from cache, fetching new data.", e);
+        localStorage.removeItem('roberts-products-cache'); // Clear corrupted cache
+      }
+
+      // If no valid cache, fetch from API. `isLoading` is already true from initial state.
+      try {
         setError(null);
-        const fetchedProducts = await fetchProducts();
+        // PERFORMANCE: Fetch only the 20 most recent products for a much faster initial load.
+        const fetchedProducts = await fetchProducts({ perPage: 20, orderBy: 'date' });
         setProducts(fetchedProducts);
+        
+        // Update cache for next time
+        const cachePayload = {
+          products: fetchedProducts,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem('roberts-products-cache', JSON.stringify(cachePayload));
       } catch (err: any) {
         setError('Failed to load products. Please check your API settings.');
         console.error(err);
@@ -99,7 +258,7 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const hasSeenModal = sessionStorage.getItem('roberts-newsletter-seen');
+      const hasSeenModal = localStorage.getItem('roberts-newsletter-seen');
       if (!hasSeenModal) {
         setIsNewsletterModalOpen(true);
       }
@@ -129,13 +288,47 @@ const AppContent: React.FC = () => {
 
   const handleCloseNewsletterModal = () => {
     setIsNewsletterModalOpen(false);
-    sessionStorage.setItem('roberts-newsletter-seen', 'true');
+    localStorage.setItem('roberts-newsletter-seen', 'true');
   };
 
   const handleSubscribeNewsletter = (phone: string) => {
       console.log(`Subscribed with phone: ${phone}`);
       // Here you would typically send the phone number to your backend/service
       handleCloseNewsletterModal();
+  };
+
+
+  const handleEditRequest = (type: 'banner' | 'category', data: any, isNew: boolean = false) => {
+    if (user?.role !== 'super-admin') return;
+    setEditingItem({ type, data, isNew });
+  };
+  
+  const handleSaveEdit = (updatedData: any) => {
+    if (!editingItem) return;
+    const { type, isNew } = editingItem;
+
+    if (type === 'banner') {
+      setHomeBanners(prev => prev.map(banner => banner.id === updatedData.id ? updatedData : banner));
+    } else if (type === 'category') {
+      if (isNew) {
+        const newCategory = { ...updatedData, id: Date.now() }; // Use timestamp for unique ID in session
+        setRoomCategories(prev => [...prev, newCategory]);
+      } else {
+        setRoomCategories(prev => prev.map(cat => cat.id === updatedData.id ? updatedData : cat));
+      }
+    }
+  };
+
+  const handleAddNewPost = (newPostData: Omit<BlogPost, 'id' | 'author' | 'date'>) => {
+    if (!user) return;
+    const newPost: BlogPost = {
+        ...newPostData,
+        id: Date.now(),
+        author: user.name,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        status: user.role === 'super-admin' ? 'published' : 'pending',
+    };
+    setBlogPosts(prev => [newPost, ...prev]);
   };
 
 
@@ -310,6 +503,8 @@ const AppContent: React.FC = () => {
                 onProductClick={handleSelectProduct}
                 onNavigate={navigateTo}
                 onSearch={handleSearch}
+                user={user}
+                onEditRequest={handleEditRequest}
               />;
       case 'shop':
         return <ShopScreen 
@@ -320,9 +515,11 @@ const AppContent: React.FC = () => {
               />;
       case 'blog':
         return <BlogScreen 
-                posts={BLOG_POSTS.filter(p => p.status === 'published')}
+                posts={blogPosts.filter(p => p.status === 'published' || user?.role === 'super-admin' || user?.role === 'staff')}
                 onBack={goBack}
                 onPostClick={(post) => navigateTo('blogPost', post)}
+                user={user}
+                onAddNewPost={handleAddNewPost}
               />;
       case 'blogPost':
         return <BlogPostScreen post={currentView.post} onBack={goBack} />;
@@ -341,7 +538,10 @@ const AppContent: React.FC = () => {
                   onProductClick={handleSelectProduct} 
                   onNavigate={navigateTo} 
                   onSearch={handleSearch}
-                  roomCategories={ROOM_CATEGORIES}
+                  roomCategories={roomCategories}
+                  homeBanners={homeBanners}
+                  user={user}
+                  onEditRequest={handleEditRequest}
                />;
     }
   };
@@ -350,6 +550,9 @@ const AppContent: React.FC = () => {
     <CartProvider>
       <SavedItemsProvider>
         <div className="min-h-screen flex flex-col">
+          {editingItem && user?.role === 'super-admin' && (
+              <AdminEditModal item={editingItem} onClose={() => setEditingItem(null)} onSave={handleSaveEdit} />
+          )}
           {isNewsletterModalOpen && (
               <NewsletterModal 
                   onClose={handleCloseNewsletterModal}

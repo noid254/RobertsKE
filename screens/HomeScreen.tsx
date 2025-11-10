@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product, type RoomCategory, type HomeBanner, type BlogPost } from '../types';
-import { CloseIcon, HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES } from '../constants';
+import { type Product, type RoomCategory, type HomeBanner, type BlogPost, User } from '../types';
+import { CloseIcon, HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
 
 interface HomeScreenProps {
   productsData: Product[];
@@ -10,7 +10,17 @@ interface HomeScreenProps {
   onNavigate: (view: any, payload?: any) => void;
   onSearch: (query: string) => void;
   roomCategories: RoomCategory[];
+  homeBanners: HomeBanner[];
+  user: User | null;
+  onEditRequest: (type: 'banner' | 'category', data: any, isNew?: boolean) => void;
 }
+
+const AdminEditButton: React.FC<{onClick: () => void, isPlus?: boolean, position?: string}> = ({ onClick, isPlus = false, position = 'top-2 right-2' }) => (
+    <button onClick={onClick} className={`absolute ${position} z-20 bg-white/80 text-gray-800 rounded-full p-2 shadow-md hover:bg-white transition-all`}>
+        {isPlus ? <PlusIcon className="w-5 h-5" /> : <EditIcon className="w-5 h-5" />}
+    </button>
+);
+
 
 // Sub-component for the new category grid
 const CategoryProductGrid: React.FC<{
@@ -42,44 +52,53 @@ interface InterleavedContent {
   imageUrl: string;
   buttonText: string;
   link: { view: any; payload?: any; };
+  // Add original banner object for editing
+  originalData?: HomeBanner;
 }
 
 // Sub-component for the new interleaved banner/blog
 const InterleavedContentCard: React.FC<{
   content: InterleavedContent;
   onNavigate: (view: any, payload?: any) => void;
-}> = ({ content, onNavigate }) => (
+  user: User | null;
+  onEditRequest: (type: 'banner' | 'category', data: any) => void;
+}> = ({ content, onNavigate, user, onEditRequest }) => (
     <div 
-        onClick={() => onNavigate(content.link.view, content.link.payload)}
-        className="h-96 rounded-lg overflow-hidden relative cursor-pointer group"
+        className="h-96 rounded-lg overflow-hidden relative group"
     >
-        <img src={content.imageUrl} alt={content.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 p-6 text-white">
-            <h3 className="font-bold text-2xl" style={{fontFamily: "'Playfair Display', serif"}}>{content.title}</h3>
-            <p className="text-sm mt-1 max-w-md">{content.subtitle}</p>
-            <button className="mt-4 bg-white text-black font-semibold py-2 px-6 rounded-full text-sm">
-                {content.buttonText}
-            </button>
+        <div className="cursor-pointer" onClick={() => onNavigate(content.link.view, content.link.payload)}>
+          <img src={content.imageUrl} alt={content.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 p-6 text-white">
+              <h3 className="font-bold text-2xl" style={{fontFamily: "'Playfair Display', serif"}}>{content.title}</h3>
+              <p className="text-sm mt-1 max-w-md">{content.subtitle}</p>
+              <button className="mt-4 bg-white text-black font-semibold py-2 px-6 rounded-full text-sm">
+                  {content.buttonText}
+              </button>
+          </div>
         </div>
+        {user?.role === 'super-admin' && content.originalData && (
+          <AdminEditButton onClick={() => onEditRequest('banner', content.originalData)} />
+        )}
     </div>
 );
 
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, onNavigate, onSearch, roomCategories }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, onNavigate, onSearch, roomCategories, homeBanners, user, onEditRequest }) => {
   const [scrollY, setScrollY] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Auto-play hero carousel
   useEffect(() => {
+    if (roomCategories.length === 0) return;
     const slideInterval = setInterval(() => {
         setCurrentSlide(prev => (prev + 1) % roomCategories.length);
     }, 5000); // Change slide every 5 seconds
     return () => clearInterval(slideInterval);
   }, [roomCategories.length]);
-
-  const nextSlide = () => setCurrentSlide(prev => (prev + 1) % roomCategories.length);
-  const prevSlide = () => setCurrentSlide(prev => (prev - 1 + roomCategories.length) % roomCategories.length);
+  
+  const nextSlide = () => roomCategories.length > 0 && setCurrentSlide(prev => (prev + 1) % roomCategories.length);
+  const prevSlide = () => roomCategories.length > 0 && setCurrentSlide(prev => (prev - 1 + roomCategories.length) % roomCategories.length);
   
   const isSticky = scrollY > 10;
 
@@ -96,7 +115,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
   }, [productsData]);
   
   const interleavedContent: InterleavedContent[] = useMemo(() => [
-    ...HOME_BANNERS,
+    ...homeBanners.map(b => ({ ...b, originalData: b})),
     ...BLOG_POSTS.filter(p => p.status === 'published').map(p => ({
         id: `blog-${p.id}`,
         title: p.title,
@@ -105,7 +124,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
         buttonText: 'Read More',
         link: { view: 'blogPost', payload: p } as { view: 'blogPost', payload: BlogPost }
     }))
-  ], []);
+  ], [homeBanners]);
 
   const categoryGrids = useMemo(() => {
       return roomCategories.slice(0, 4);
@@ -146,7 +165,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
 
       <main>
         {/* Hero Carousel Section */}
-        <section className="relative w-full h-[60vh] lg:h-[80vh] text-white">
+        <section className="relative w-full h-[60vh] lg:h-[80vh] text-white group">
           <div className="relative w-full h-full overflow-hidden">
             {roomCategories.map((category, index) => (
               <div key={category.id} className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
@@ -164,6 +183,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
               </div>
             ))}
           </div>
+          {user?.role === 'super-admin' && roomCategories.length > 0 && <AdminEditButton onClick={() => onEditRequest('category', roomCategories[currentSlide])} />}
           <button onClick={prevSlide} className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
             <ChevronLeftIcon className="w-6 h-6 lg:w-8 lg:h-8" />
           </button>
@@ -192,35 +212,49 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
         </section>
 
         {/* Interleaved Banner */}
-        <section className="py-12 lg:py-24 bg-white">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                 <InterleavedContentCard 
-                    content={interleavedContent[0]}
-                    onNavigate={onNavigate}
-                />
-            </div>
-        </section>
+        {interleavedContent[0] && (
+            <section className="py-12 lg:py-24 bg-white">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <InterleavedContentCard 
+                        content={interleavedContent[0]}
+                        onNavigate={onNavigate}
+                        user={user}
+                        onEditRequest={onEditRequest}
+                    />
+                </div>
+            </section>
+        )}
+
 
         {/* Shop by Room Section */}
         <section className="py-12 lg:py-24">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl lg:text-4xl text-center mb-8 lg:mb-12" style={{fontFamily: "'Playfair Display', serif"}}>Shop by Room</h2>
+                <div className="flex justify-center items-center gap-4">
+                    <h2 className="text-3xl lg:text-4xl text-center" style={{fontFamily: "'Playfair Display', serif"}}>Shop by Room</h2>
+                    {user?.role === 'super-admin' && (
+                        <button onClick={() => onEditRequest('category', null, true)} className="bg-gray-800 text-white rounded-full p-2 shadow-md hover:bg-gray-700 transition-all -mt-1">
+                            <PlusIcon className="w-5 h-5"/>
+                        </button>
+                    )}
+                </div>
             </div>
-            <div className="w-full lg:w-4/5 mx-auto">
+            <div className="w-full lg:w-4/5 mx-auto mt-8 lg:mt-12">
                 <div className="overflow-x-auto scrollbar-hide">
                     <div className="flex space-x-4 lg:space-x-6 pb-4 pl-4 sm:pl-6 lg:pl-0">
                         {roomCategories.map((room) => (
                             <div
                                 key={room.id}
-                                onClick={() => onNavigate('category', room)}
-                                className="w-64 md:w-72 flex-shrink-0 aspect-square rounded-lg overflow-hidden relative cursor-pointer group"
+                                className="w-64 md:w-72 flex-shrink-0 aspect-square rounded-lg overflow-hidden relative group"
                             >
-                                <img src={room.imageUrl} alt={room.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                                <div className="absolute bottom-4 left-4 text-white">
-                                    <h3 className="font-semibold text-xl tracking-wide">{room.name}</h3>
-                                    <p className="text-xs mt-1 max-w-[90%]">{room.description}</p>
+                                <div className="cursor-pointer" onClick={() => onNavigate('category', room)}>
+                                    <img src={room.imageUrl} alt={room.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                    <div className="absolute bottom-4 left-4 text-white">
+                                        <h3 className="font-semibold text-xl tracking-wide">{room.name}</h3>
+                                        <p className="text-xs mt-1 max-w-[90%]">{room.description}</p>
+                                    </div>
                                 </div>
+                                {user?.role === 'super-admin' && <AdminEditButton onClick={() => onEditRequest('category', room)} />}
                             </div>
                         ))}
                     </div>
@@ -252,6 +286,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                     <InterleavedContentCard 
                       content={content}
                       onNavigate={onNavigate}
+                      user={user}
+                      onEditRequest={onEditRequest}
                     />
                   )}
                 </React.Fragment>

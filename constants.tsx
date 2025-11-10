@@ -58,38 +58,136 @@ export const ORDERS: Order[] = [
     }
 ];
 
-// FIX: Added missing constant exports to resolve module not found errors.
 export const BLOG_POSTS: BlogPost[] = [
     {
         id: 1,
-        title: "5 Ways to Bring Natural Light into Your Nairobi Home",
-        excerpt: "Brighten up your space with these simple tips.",
-        content: "Natural light can transform a room, making it feel larger, more inviting, and boosting your mood. Here in Nairobi, where the sun graces us most of the year, maximizing daylight is a design essential.\n\n1. Use Light Colors: Painting your walls in light, neutral tones like white, beige, or soft grey reflects light beautifully.\n\n2. Strategic Mirrors: A large mirror placed opposite a window can double the amount of light in a room.\n\n3. Sheer Curtains: Ditch heavy drapes for lightweight, sheer curtains that provide privacy without blocking the sun.\n\n4. Clean Your Windows: It sounds simple, but you'd be surprised how much grime can accumulate and dim the light.\n\n5. Declutter: A minimalist approach allows light to move freely through a space. Keep window sills clear and choose furniture with a lighter visual weight.",
-        imageUrl: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1769&auto=format&fit=crop",
+        title: "Small Space, Big Style: 5 Smart Furniture Ideas for Nairobi Apartments",
+        excerpt: "Maximize your living area with these clever, space-saving solutions.",
+        content: "Living in a Nairobi apartment often means making the most of a compact space. But a smaller footprint doesn't have to mean sacrificing style. The key is smart, multi-functional furniture.\n\n1. **The Convertible Sofa Bed:** An absolute essential. Modern sofa beds are comfortable, stylish, and transform your living room into a guest room in seconds.\n2. **Nesting Coffee Tables:** Get the surface area when you need it, and tuck them away when you don't. They offer flexibility for entertaining.\n3. **Wall-Mounted Shelving:** Go vertical! Floating shelves draw the eye upward, creating a sense of space while offering valuable storage for books and decor.\n4. **Dining Benches:** A dining bench can seat more people than chairs and can be neatly tucked under the table when not in use.\n5. **Mirrored Wardrobes:** Mirrors are a classic trick to make a room feel larger. A wardrobe with mirrored doors adds storage and light-reflecting brightness to your bedroom.",
+        imageUrl: "https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1770&auto=format&fit=crop",
         author: "Fatima Yusuf",
-        date: "Oct 15, 2023",
+        date: "Oct 28, 2023",
         status: "published",
         bgColor: "yellow",
     },
     {
         id: 2,
-        title: "The Rise of Smart Furniture in Kenya",
-        excerpt: "How technology is shaping our living rooms.",
-        content: "Smart furniture is no longer a futuristic concept; it's here, and it's making life more convenient. From sofas with built-in chargers to coffee tables with integrated speakers, Kenyan homes are getting a tech upgrade.\n\nOur latest collection features smart diffusers you can control from your phone, media consoles designed for modern entertainment systems, and lighting solutions that adapt to your mood. Embrace the future of comfort with Roberts.",
-        imageUrl: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1770&auto=format&fit=crop",
+        title: "Built to Last: Why Quality Furniture is a Smart Investment",
+        excerpt: "Discover the long-term value of choosing well-crafted pieces for your home.",
+        content: "In a world of fast furniture, investing in quality pieces is a conscious choice for sustainability and long-term value. Well-made furniture, crafted from solid woods and durable fabrics, stands the test of time.\n\nUnlike cheaper alternatives that may need replacing every few years, a quality dining table or sofa can last for decades, becoming a cherished part of your family's story. It's not just about durability; it's about the craftsmanship, the attention to detail, and the timeless design that won't go out of style. Choosing quality means buying less often, reducing waste, and creating a home filled with meaningful, lasting items.",
+        imageUrl: "https://images.unsplash.com/photo-1618220252344-83b571257155?q=80&w=1887&auto=format&fit=crop",
         author: "David Mwangi",
-        date: "Nov 02, 2023",
+        date: "Oct 25, 2023",
         status: "published",
         bgColor: "black",
     },
     {
         id: 3,
-        title: "Choosing the Perfect Rug for Your Space",
-        excerpt: "A guide to sizes, materials, and styles.",
-        content: "A rug can anchor a room, define a space, and add warmth and texture. But choosing the right one can be daunting. Consider the size: in a living room, at least the front legs of your sofa and chairs should be on the rug. Think about material: wool is durable and soft, while natural fibers like jute add a rustic touch. Finally, style: a bold geometric pattern can be a statement piece, while a neutral rug provides a calming foundation. Visit us to see our hand-tufted collection.",
+        title: "Bringing the Outside In: Create a Lush Balcony Oasis in Nairobi",
+        excerpt: "Transform your balcony into a personal retreat with these simple tips.",
+        content: "Your balcony is an extension of your home. With a little creativity, you can turn it into a green, serene escape from the city buzz.\n\nStart with flooring; outdoor rugs or interlocking deck tiles can instantly upgrade the space. Choose weather-resistant furniture like a compact bistro set or a comfortable armchair. And of course, plants! Use a mix of hanging baskets, railing planters, and floor pots to create layers of green. Add some solar-powered fairy lights for a magical evening ambiance. Your urban oasis awaits.",
+        imageUrl: "https://images.unsplash.com/photo-1620628037413-58134763e400?q=80&w=1887&auto=format&fit=crop",
+        author: "Fatima Yusuf",
+        date: "Oct 22, 2023",
+        status: "published",
+        bgColor: "yellow",
+    },
+    {
+        id: 4,
+        title: "The Art of Layering: Choosing the Perfect Rug for Your Kenyan Home",
+        excerpt: "A guide to sizes, materials, and styles for the foundation of your room.",
+        content: "A rug is more than just a floor covering; it's the anchor of your room. For Kenyan homes, natural fibers like sisal and jute are fantastic, durable options that add wonderful texture. When it comes to size, a common mistake is choosing one that's too small. In a living room, ensure at least the front legs of your sofa and chairs are on the rug. Don't be afraid of pattern! A bold geometric or traditional print can add personality and hide everyday wear. For a truly unique look, try layering a smaller, patterned rug over a larger, neutral one.",
         imageUrl: "https://images.unsplash.com/photo-1590819448393-014c24595a89?q=80&w=1887&auto=format&fit=crop",
+        author: "David Mwangi",
+        date: "Oct 19, 2023",
+        status: "published",
+        bgColor: "black",
+    },
+     {
+        id: 5,
+        title: "Lighting 101: Brighten Your Home with the Right Fixtures",
+        excerpt: "Understand the essentials of lighting to create mood and functionality.",
+        content: "Good lighting can completely change the feel of a room. Think in layers: \n\n1. **Ambient Lighting:** This is the overall illumination, like ceiling fixtures or recessed lights.\n2. **Task Lighting:** Focused light for specific activities, such as a reading lamp by a chair or under-cabinet lighting in the kitchen.\n3. **Accent Lighting:** This highlights architectural features or decor, like a spotlight on a piece of art. \n\nChoose warmer light bulbs (lower Kelvin) for cozy spaces like bedrooms and living rooms, and cooler ones for functional areas like kitchens and bathrooms. A statement pendant light or a beautiful floor lamp can also act as a piece of decor itself.",
+        imageUrl: "https://images.unsplash.com/photo-1617028169722-c32f502d9a16?q=80&w=1887&auto=format&fit=crop",
+        author: "David Mwangi",
+        date: "Oct 15, 2023",
+        status: "published",
+        bgColor: "black",
+    },
+    {
+        id: 6,
+        title: "Creating a Serene Sanctuary: Bedroom Decor Tips",
+        excerpt: "Design a bedroom that promotes rest and relaxation.",
+        content: "Your bedroom should be your personal retreat. Start with a calming color palette—soft blues, greens, greys, or warm neutrals work wonders. Invest in high-quality bedding; it's something you use every single night. Blackout curtains are a must for blocking out early morning light and ensuring a restful sleep. Keep clutter to a minimum with smart storage solutions like under-bed drawers or a stylish dresser. Finally, add soft lighting with bedside lamps and perhaps a dimmer for the main light.",
+        imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1770&auto=format&fit=crop",
+        author: "Fatima Yusuf",
+        date: "Oct 12, 2023",
+        status: "published",
+        bgColor: "yellow",
+    },
+    {
+        id: 7,
+        title: "The Modern Kenyan Kitchen: Blending Function and Style",
+        excerpt: "Ideas for creating a kitchen that is both beautiful and practical.",
+        content: "The kitchen is the heart of the home, and today's designs blend seamless functionality with personality. A kitchen island is a fantastic multi-purpose feature, offering extra prep space, storage, and casual seating with stylish bar stools. Consider open shelving to display your favorite crockery, balanced with closed cabinets to hide clutter. Good lighting is crucial; a combination of ceiling lights and under-cabinet task lighting works best. Don't forget a durable, easy-to-clean countertop material that complements your overall aesthetic.",
+        imageUrl: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1770&auto=format&fit=crop",
+        author: "David Mwangi",
+        date: "Oct 09, 2023",
+        status: "published",
+        bgColor: "black",
+    },
+    {
+        id: 8,
+        title: "Sustainable Style: Embracing Eco-Friendly Decor",
+        excerpt: "Decorate your home beautifully while being kind to the planet.",
+        content: "Sustainable interior design is about making conscious choices. Opt for furniture made from reclaimed wood or fast-growing materials like bamboo and rattan. Look for textiles made from organic cotton, linen, or recycled fibers. Incorporate locally made decor from Kenyan artisans to reduce your carbon footprint and support the local economy. Indoor plants are another wonderful way to bring nature indoors and improve air quality. A sustainable home is a healthy and beautiful home.",
+        imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop",
+        author: "Fatima Yusuf",
+        date: "Oct 05, 2023",
+        status: "published",
+        bgColor: "yellow",
+    },
+    {
+        id: 9,
+        title: "Home Office Inspiration: A Productive Workspace in Nairobi",
+        excerpt: "Carve out a functional and inspiring corner for remote work.",
+        content: "With remote work becoming more common, a dedicated workspace is essential. Even a small corner can be transformed. Choose an ergonomic chair for comfort and a desk that fits the scale of your space. Ensure you have good task lighting to avoid eye strain. Use vertical storage like wall grids or shelves to keep your desk clear. Add a plant and some personal touches to make the space feel inspiring and uniquely yours.",
+        imageUrl: "https://images.unsplash.com/photo-1449247709967-d4461a6a6103?q=80&w=1771&auto=format&fit=crop",
+        author: "David Mwangi",
+        date: "Oct 02, 2023",
+        status: "published",
+        bgColor: "black",
+    },
+     {
+        id: 10,
+        title: "Color Psychology: Choosing Paint for Your Kenyan Home",
+        excerpt: "How colors can influence the mood and feel of your space.",
+        content: "Paint is one of the easiest ways to transform a room. But what colors should you choose? Soft blues and greens can create a calm, serene atmosphere, perfect for bedrooms. Yellows and oranges are energetic and can be great for kitchens or creative spaces. Neutral tones like beige, grey, and off-white provide a versatile backdrop that allows your furniture and decor to shine. Before you commit, always test a paint sample on your wall to see how it looks in your home's unique natural light.",
+        imageUrl: "https://images.unsplash.com/photo-1519642918688-7e43b19245d8?q=80&w=1770&auto=format&fit=crop",
         author: "Fatima Yusuf",
         date: "Sep 28, 2023",
+        status: "published",
+        bgColor: "yellow",
+    },
+     {
+        id: 11,
+        title: "Wallpaper in Kenya: A Guide to Choosing the Right Style",
+        excerpt: "From accent walls to full rooms, find the perfect wallpaper.",
+        content: "Wallpaper is back in a big way, offering an instant injection of pattern and personality. For the Kenyan climate, it's wise to choose vinyl or non-woven wallpapers that can handle a bit of humidity. A bold, tropical print can make a stunning accent wall in a living room or entryway. For a more subtle look, consider a textured grasscloth wallpaper to add warmth and dimension. Don't be afraid to experiment in smaller spaces like a powder room to make a big impact.",
+        imageUrl: "https://images.unsplash.com/photo-1560114943-247c8441d4b6?q=80&w=1887&auto=format&fit=crop",
+        author: "Fatima Yusuf",
+        date: "Sep 25, 2023",
+        status: "published",
+        bgColor: "black",
+    },
+     {
+        id: 12,
+        title: "Entertaining in Style: Dining Room Essentials",
+        excerpt: "Create a welcoming space for memorable meals with family and friends.",
+        content: "The dining room is where memories are made. The centerpiece is the dining table; choose a size and shape that fits your room and your hosting needs. Comfortable dining chairs are a must—your guests will thank you! A sideboard or buffet provides essential storage for dinnerware and adds a stylish surface for serving. Finally, set the mood with a beautiful pendant light over the table. With these key pieces, you'll be ready to host in style.",
+        imageUrl: "https://images.unsplash.com/photo-1617806118233-18e1de247200?q=80&w=1770&auto=format&fit=crop",
+        author: "David Mwangi",
+        date: "Sep 21, 2023",
         status: "pending",
         bgColor: "yellow",
     }
@@ -458,4 +556,12 @@ export const ServicesIcon = ({ className = "w-6 h-6" }: { className?: string }) 
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
     </svg>
+);
+
+export const EditIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+);
+
+export const PlusIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
 );

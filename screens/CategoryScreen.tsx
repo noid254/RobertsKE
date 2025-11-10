@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product, type RoomCategory } from '../types';
-import { ROOM_CATEGORIES, CloseIcon } from '../constants';
+import { type Product, type RoomCategory, User } from '../types';
+import { ROOM_CATEGORIES, CloseIcon, EditIcon } from '../constants';
 
 interface CategoryScreenProps {
   category: RoomCategory;
@@ -11,6 +11,8 @@ interface CategoryScreenProps {
   onProductClick: (product: Product) => void;
   onNavigate: (view: any, payload?: any) => void;
   onSearch: (query: string) => void;
+  user: User | null;
+  onEditRequest: (type: 'category', data: any) => void;
 }
 
 const FilterPanel: React.FC<{
@@ -52,7 +54,7 @@ const FilterPanel: React.FC<{
   );
 };
 
-const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, onBack, onProductClick, onNavigate, onSearch }) => {
+const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, onBack, onProductClick, onNavigate, onSearch, user, onEditRequest }) => {
   const [activeSubCategory, setActiveSubCategory] = useState('All');
   
   const productsForCategory = useMemo(() => {
@@ -78,13 +80,18 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, 
       />
 
       <main className="pt-16 lg:pt-20">
-        <section className="relative w-full h-56 lg:h-80 text-white flex flex-col justify-center items-center text-center p-4">
+        <section className="relative w-full h-56 lg:h-80 text-white flex flex-col justify-center items-center text-center p-4 group">
           <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
           <img src={category.hero.imageUrl} alt={category.hero.title} className="absolute inset-0 w-full h-full object-cover" />
           <div className="relative z-20">
             <h1 className="text-4xl lg:text-5xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{category.hero.title}</h1>
             <p className="mt-2 max-w-md mx-auto">{category.hero.subtitle}</p>
           </div>
+          {user?.role === 'super-admin' && (
+             <button onClick={() => onEditRequest('category', category)} className="absolute top-4 right-4 z-20 bg-white/80 text-gray-800 rounded-full p-2 shadow-md hover:bg-white transition-all">
+                <EditIcon className="w-5 h-5" />
+            </button>
+          )}
         </section>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">

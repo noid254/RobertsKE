@@ -35,7 +35,7 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSucc
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 bg-[#F9F5F0]">
         <div className="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1556742044-53342c8a7536?q=80&w=1887&auto=format&fit=crop" alt="Interior design" className="w-full h-full object-cover opacity-20"/>
+            <img src="https://images.unsplash.com/photo-1556742044-53342c8a7536?q=80&w=1887&auto-format&fit=crop" alt="Interior design" className="w-full h-full object-cover opacity-20"/>
         </div>
 
         <div className="relative z-10 w-full max-w-sm bg-white/70 backdrop-blur-md p-8 rounded-lg shadow-2xl">
@@ -77,7 +77,6 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSucc
                             onChange={(e) => setOtp(e.target.value)}
                             className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 text-center tracking-[1em]"
                         />
-                         <p className="text-xs text-gray-400 mt-2 text-center">Test OTPs: 1234 (normal), 3232 (admin)</p>
                     </div>
                     <button type="submit" className="w-full bg-gray-800 text-white py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors">
                         Sign In

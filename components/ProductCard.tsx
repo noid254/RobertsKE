@@ -23,7 +23,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="bg-gray-100 rounded-lg overflow-hidden mb-2 relative shadow-sm hover:shadow-xl transition-shadow duration-300">
         <img 
           src={imageUrl} 
-          alt={product.name} 
+          alt={product.name}
+          loading="lazy" 
           className="w-full h-48 lg:h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
         />
         {product.sale && (

@@ -60,17 +60,28 @@ const mapWooProductToAppProduct = (wooProduct: any): Product => {
   };
 };
 
-export const fetchProducts = async (): Promise<Product[]> => {
+interface FetchProductsParams {
+    perPage?: number;
+    orderBy?: 'date' | 'title' | 'price' | 'popularity' | 'rating';
+    order?: 'asc' | 'desc';
+}
+
+export const fetchProducts = async (params: FetchProductsParams = {}): Promise<Product[]> => {
+  const { perPage = 100, orderBy = 'date', order = 'desc' } = params;
   try {
-    // Auth keys are now sent in headers, not the URL, to avoid signature issues.
-    const targetUrl = `${WOOCOMMERCE_URL}/wp-json/wc/v3/products?per_page=100`;
+    const queryParams = new URLSearchParams({
+        per_page: perPage.toString(),
+        orderby: orderBy,
+        order: order,
+    }).toString();
+    
+    const targetUrl = `${WOOCOMMERCE_URL}/wp-json/wc/v3/products?${queryParams}`;
     
     // Using a public CORS proxy.
     const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 
     const headers = new Headers();
     // Use Basic Auth with consumer key as username and secret as password.
-    // This is more reliable than passing keys in the URL.
     headers.append('Authorization', 'Basic ' + btoa(`${CONSUMER_KEY}:${CONSUMER_SECRET}`));
 
     const response = await fetch(proxyUrl, { headers });
