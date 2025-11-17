@@ -1,9 +1,10 @@
+
 import React, { useState, useContext } from 'react';
 import Header from '../components/Header';
 import StarRating from '../components/StarRating';
 import ProductCard from '../components/ProductCard';
 import { type Product, type ProductVariant } from '../types';
-import { HeartIcon, WhatsAppIcon } from '../constants';
+import { HeartIcon, WhatsAppIcon, ShareIcon } from '../constants';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useSavedItems } from '../context/SavedItemsContext';
@@ -60,6 +61,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
   const [mainImage, setMainImage] = useState<string>(product.variants[0]?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image');
+  const [copyStatus, setCopyStatus] = useState('Share');
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const { addSavedItem, removeSavedItem, isSaved } = useSavedItems();
@@ -79,6 +81,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
     } else {
       addSavedItem(product);
     }
+  };
+  
+  const handleShare = () => {
+    const url = `${window.location.origin}${window.location.pathname}#/product/${product.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+        setCopyStatus('Copied!');
+        setTimeout(() => setCopyStatus('Share'), 2000);
+    }, () => {
+        setCopyStatus('Failed');
+        setTimeout(() => setCopyStatus('Share'), 2000);
+    });
   };
 
   const getPrice = () => {
@@ -133,12 +146,17 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
                             <span className="text-xs text-gray-500 ml-2">({product.reviewCount} reviews)</span>
                             </div>
                         </div>
-                        <button onClick={handleToggleSavedItem} className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
-                            <HeartIcon 
-                                className={`w-6 h-6 ${isSaved(product.id) ? 'text-red-500' : 'text-gray-600'}`} 
-                                isFilled={isSaved(product.id)}
-                            />
-                        </button>
+                        <div className="flex items-center space-x-2">
+                            <button onClick={handleShare} title="Share link" className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
+                                <ShareIcon className="w-6 h-6 text-gray-600" />
+                            </button>
+                            <button onClick={handleToggleSavedItem} title="Save item" className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
+                                <HeartIcon 
+                                    className={`w-6 h-6 ${isSaved(product.id) ? 'text-red-500' : 'text-gray-600'}`} 
+                                    isFilled={isSaved(product.id)}
+                                />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="my-4">
@@ -205,43 +223,51 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
                 ) : (
                     <p className="text-sm text-gray-500">No reviews yet. Be the first to share your thoughts!</p>
                 )}
-
-                {user && (
-                    <div className="mt-8">
-                        <h3 className="font-semibold text-gray-800 mb-2">Write a Review</h3>
-                        <form onSubmit={e => e.preventDefault()}>
-                            <textarea className="w-full p-3 border rounded-md text-sm" placeholder="Share your experience..."></textarea>
-                            <button className="mt-2 bg-gray-800 text-white py-2 px-6 rounded-full font-semibold text-sm">Submit Review</button>
-                        </form>
+            </section>
+          
+            {/* Creator / Seller info */}
+            {creator && (
+            <section className="mt-12 lg:mt-16 pt-8 border-t">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Sold By</h2>
+                <div 
+                    className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => onNavigate({ name: 'creatorProfile', creator })}
+                >
+                    <img src={creator.avatarUrl} alt={creator.name} className="w-16 h-16 rounded-full object-cover"/>
+                    <div>
+                        <p className="font-bold text-lg text-gray-800">{creator.name}</p>
+                        <p className="text-sm text-gray-600">{creator.bio}</p>
                     </div>
-                )}
+                </div>
+            </section>
+            )}
+
+            {/* Related Products */}
+            <section className="mt-12 lg:mt-16 pt-8 border-t">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">You Might Also Like</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-6">
+                    {relatedProducts.map(p => (
+                        <ProductCard key={p.id} product={p} onClick={() => onProductClick(p)} />
+                    ))}
+                </div>
             </section>
         </div>
 
-        {/* You Might Also Like */}
-        <section className="mt-12 lg:mt-16 py-12 lg:py-16 bg-[#F9F5F0]">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 text-center">You Might Also Like</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-6 lg:gap-x-6 lg:gap-y-10 mt-8">
-                    {relatedProducts.map(relatedProduct => (
-                        <ProductCard key={relatedProduct.id} product={relatedProduct} onClick={() => onProductClick(relatedProduct)} />
-                    ))}
-                </div>
-            </div>
-        </section>
-      </main>
-
-      <footer className="sticky bottom-0 left-0 right-0 bg-white/80 p-4 border-t border-gray-200 z-30 backdrop-blur-sm lg:hidden">
-        <div className="container mx-auto px-4 sm:px-6">
+        {/* Floating Action Bar for Mobile */}
+        <div className="lg:hidden h-24" /> {/* Spacer for content visibility */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t p-3 flex items-center gap-3">
+             <a href={`https://wa.me/?text=${encodeURIComponent(`Hi, I'm interested in the ${product.name}: ${window.location.origin}${window.location.pathname}#/product/${product.id}`)}`} target="_blank" rel="noopener noreferrer" className="p-3 border rounded-full hover:bg-gray-100 transition-colors">
+                <WhatsAppIcon className="w-6 h-6 text-green-500" />
+            </a>
             <button 
-                className="w-full py-3 border border-gray-800 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300"
                 onClick={() => addToCart({ product: { ...product }, selectedVariant, quantity: 1})}
                 disabled={stockStatus <= 0}
-                >
-                {stockStatus > 0 ? 'Add to cart' : 'Out of Stock'}
+            >
+                {stockStatus > 0 ? 'Add to Cart' : 'Out of Stock'}
             </button>
         </div>
-      </footer>
+      </main>
     </div>
   );
 };

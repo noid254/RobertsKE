@@ -1,8 +1,11 @@
+
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory, type HomeBanner, type BlogPost, User } from '../types';
-import { CloseIcon, HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
+import { HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
 import { type View } from '../App';
 
 interface HomeScreenProps {
@@ -29,7 +32,8 @@ const CategoryProductGrid: React.FC<{
   products: Product[];
   onProductClick: (product: Product) => void;
   onViewAllClick: () => void;
-}> = ({ category, products, onProductClick, onViewAllClick }) => (
+  isLoading: boolean;
+}> = ({ category, products, onProductClick, onViewAllClick, isLoading }) => (
   <div>
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-2xl lg:text-3xl" style={{fontFamily: "'Playfair Display', serif"}}>{category.name}</h2>
@@ -38,9 +42,14 @@ const CategoryProductGrid: React.FC<{
       </button>
     </div>
     <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-6 lg:gap-x-6 lg:gap-y-10">
-      {products.map(product => (
-        <ProductCard key={product.id} product={product} onClick={() => onProductClick(product)} />
-      ))}
+      {isLoading ? (
+          [...Array(3)].map((_, i) => <ProductCardSkeleton key={i} />)
+        ) : (
+          products.map(product => (
+            <ProductCard key={product.id} product={product} onClick={() => onProductClick(product)} />
+          ))
+        )
+      }
     </div>
   </div>
 );
@@ -184,35 +193,45 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
 
       <main>
         {/* Hero Carousel Section */}
-        <section className="relative w-full h-[60vh] lg:h-[80vh] text-white group">
-          <div className="relative w-full h-full overflow-hidden">
-            {roomCategories.map((category, index) => (
-              <div key={category.id} className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
-                <img src={category.hero.imageUrl} alt={category.hero.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 z-20 h-full flex flex-col justify-center items-center text-center p-4">
-                  <h1 className="text-4xl lg:text-6xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{category.hero.title}</h1>
-                  <p className="mt-2 text-lg max-w-lg mx-auto">{category.hero.subtitle}</p>
-                  <button 
-                    onClick={() => onNavigate({ name: 'category', category })}
-                    className="mt-6 bg-white text-black font-semibold py-3 px-10 rounded-full hover:bg-opacity-90 transition-colors">
-                    Shop {category.name}
-                  </button>
+        <section className="relative w-full h-[60vh] lg:h-[80vh] bg-gray-200">
+          {roomCategories.length === 0 ? (
+            <div className="w-full h-full animate-pulse">
+                <div className="absolute inset-0 z-20 h-full flex flex-col justify-center items-center text-center p-4 space-y-4">
+                    <div className="h-12 lg:h-16 w-3/5 bg-gray-300 rounded-md"></div>
+                    <div className="h-5 w-4/5 max-w-lg bg-gray-300 rounded-md"></div>
+                    <div className="!mt-8 h-12 w-40 bg-gray-300 rounded-full"></div>
                 </div>
-              </div>
-            ))}
-          </div>
-          {user?.role === 'super-admin' && roomCategories.length > 0 && (
-            <button onClick={() => onEditRequest('category', roomCategories[currentSlide])} className="absolute top-4 right-4 z-30 bg-white/80 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-lg hover:bg-white transition-all flex items-center gap-2">
-                <EditIcon className="w-4 h-4" /> Edit Hero
-            </button>
+            </div>
+          ) : (
+            <div className="relative w-full h-full overflow-hidden text-white group">
+                {roomCategories.map((category, index) => (
+                <div key={category.id} className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
+                    <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
+                    <img src={category.hero.imageUrl} alt={category.hero.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 z-20 h-full flex flex-col justify-center items-center text-center p-4">
+                    <h1 className="text-4xl lg:text-6xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{category.hero.title}</h1>
+                    <p className="mt-2 text-lg max-w-lg mx-auto">{category.hero.subtitle}</p>
+                    <button 
+                        onClick={() => onNavigate({ name: 'category', category })}
+                        className="mt-6 bg-white text-black font-semibold py-3 px-10 rounded-full hover:bg-opacity-90 transition-colors">
+                        Shop {category.name}
+                    </button>
+                    </div>
+                </div>
+                ))}
+                {user?.role === 'super-admin' && roomCategories.length > 0 && (
+                    <button onClick={() => onEditRequest('category', roomCategories[currentSlide])} className="absolute top-4 right-4 z-30 bg-white/80 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-lg hover:bg-white transition-all flex items-center gap-2">
+                        <EditIcon className="w-4 h-4" /> Edit Hero
+                    </button>
+                )}
+                <button onClick={prevSlide} className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+                    <ChevronLeftIcon className="w-6 h-6 lg:w-8 lg:h-8" />
+                </button>
+                <button onClick={nextSlide} className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
+                    <ChevronRightIcon className="w-6 h-6 lg:w-8 lg:h-8" />
+                </button>
+            </div>
           )}
-          <button onClick={prevSlide} className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
-            <ChevronLeftIcon className="w-6 h-6 lg:w-8 lg:h-8" />
-          </button>
-          <button onClick={nextSlide} className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
-            <ChevronRightIcon className="w-6 h-6 lg:w-8 lg:h-8" />
-          </button>
         </section>
 
         {/* New Arrivals Slider */}
@@ -224,11 +243,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                 </p>
                 <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
                     <div className="flex space-x-4 lg:grid lg:grid-cols-5 lg:gap-6 lg:space-x-0">
-                        {newArrivals.slice(0,5).map(product => (
-                            <div key={product.id} className="w-48 sm:w-56 lg:w-auto flex-shrink-0">
-                                <ProductCard product={product} onClick={() => onProductClick(product)} />
-                            </div>
-                        ))}
+                        {newArrivals.length === 0 ? (
+                            [...Array(5)].map((_, i) => (
+                                <div key={i} className="w-48 sm:w-56 lg:w-auto flex-shrink-0">
+                                    <ProductCardSkeleton />
+                                </div>
+                            ))
+                        ) : (
+                            newArrivals.slice(0,5).map(product => (
+                                <div key={product.id} className="w-48 sm:w-56 lg:w-auto flex-shrink-0">
+                                    <ProductCard product={product} onClick={() => onProductClick(product)} />
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
@@ -301,6 +328,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                     products={categoryProducts}
                     onProductClick={onProductClick}
                     onViewAllClick={() => onNavigate({ name: 'category', category })}
+                    isLoading={productsData.length === 0}
                   />
                   
                   {index === 1 && <DecorCategoryScroller />}

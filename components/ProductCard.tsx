@@ -1,6 +1,8 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { type Product } from '../types';
 import StarRating from './StarRating';
+import { ShareIcon } from '../constants';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +14,20 @@ const formatPrice = (price: number) => {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+  const [copyStatus, setCopyStatus] = useState('');
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    const url = `${window.location.origin}${window.location.pathname}#/product/${product.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+        setCopyStatus('Copied!');
+        setTimeout(() => setCopyStatus(''), 2000);
+    }, () => {
+        setCopyStatus('Failed!');
+        setTimeout(() => setCopyStatus(''), 2000);
+    });
+  };
+
   const imageUrl = product.variants?.[0]?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image';
   const salePrice = product.sale ? product.price * (1 - product.sale.discount) : null;
   const preOrderPrice = product.preOrder ? product.price * (1 - product.preOrder.discount) : null;
@@ -28,6 +44,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           loading="lazy" 
           className="w-full h-48 lg:h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
         />
+        {/* Share Button & Tooltip */}
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+                onClick={handleShare}
+                className="bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-md"
+                aria-label="Copy product link"
+            >
+                <ShareIcon className="w-4 h-4 text-gray-800" />
+            </button>
+            {copyStatus && (
+                <div className="absolute top-10 -right-1 bg-gray-800 text-white text-xs px-2 py-1 rounded-md shadow-lg animate-fade-in-fast whitespace-nowrap">
+                    {copyStatus}
+                </div>
+            )}
+        </div>
+
         {product.sale && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
                 -{Math.round(product.sale.discount * 100)}%
