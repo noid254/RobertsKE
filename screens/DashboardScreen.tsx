@@ -4,13 +4,118 @@ import { type Product, type BlogPost, type User } from '../types';
 import { BLOG_POSTS, USERS } from '../constants';
 import { AuthContext } from '../context/AuthContext';
 
+type Tab = 'overview' | 'content' | 'users' | 'insights';
+type ModalContent = null | { type: 'product' } | { type: 'post' };
+
+interface AddContentModalProps {
+    content: ModalContent;
+    onClose: () => void;
+    onSave: (type: 'product' | 'post', data: any) => void;
+}
+
+const AddContentModal: React.FC<AddContentModalProps> = ({ content, onClose, onSave }) => {
+    const [productData, setProductData] = useState({ title: '', description: '' });
+    const [postData, setPostData] = useState({
+        title: '',
+        excerpt: '',
+        content: '',
+        imageUrl: '',
+        bgColor: 'yellow' as 'yellow' | 'black',
+    });
+
+    if (!content) return null;
+
+    const handleProductChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setProductData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePostChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setPostData(prev => ({ ...prev, [name]: value }));
+    };
+    
+    const handlePostFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPostData(prev => ({ ...prev, imageUrl: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (content.type === 'product') {
+            onSave('product', productData);
+        } else {
+            onSave('post', postData);
+        }
+        onClose();
+    };
+
+    const renderProductForm = () => (
+        <div className="space-y-4 text-sm">
+            <div>
+                <label className="text-gray-600 font-medium">Product Name</label>
+                <input type="text" name="title" value={productData.title} onChange={handleProductChange} placeholder="e.g. 'Mid-Century Modern Sofa'" className="w-full mt-1 p-2 border border-gray-300 rounded-md"/>
+            </div>
+            <div>
+                <label className="text-gray-600 font-medium">Description</label>
+                <textarea name="description" value={productData.description} onChange={handleProductChange} placeholder="e.g. 'A beautiful sofa...'" className="w-full mt-1 p-2 border border-gray-300 rounded-md h-24"></textarea>
+            </div>
+        </div>
+    );
+
+    const renderPostForm = () => (
+        <div className="space-y-3 text-sm">
+            <div><label className="font-semibold">Title</label><input type="text" name="title" value={postData.title} onChange={handlePostChange} className="w-full p-2 border rounded"/></div>
+            <div><label className="font-semibold">Excerpt (Short Summary)</label><textarea name="excerpt" value={postData.excerpt} onChange={handlePostChange} className="w-full p-2 border rounded h-20"></textarea></div>
+            <div><label className="font-semibold">Full Content</label><textarea name="content" value={postData.content} onChange={handlePostChange} className="w-full p-2 border rounded h-32"></textarea></div>
+            <div>
+                <label className="font-semibold">Cover Image</label>
+                {postData.imageUrl && <img src={postData.imageUrl} alt="Preview" className="mt-1 w-full h-32 object-cover rounded" />}
+                <input type="file" name="imageFile" accept="image/*" onChange={handlePostFileChange} className="w-full text-sm mt-1"/>
+            </div>
+            <div>
+                <label className="font-semibold">Card Background Color</label>
+                <select name="bgColor" value={postData.bgColor} onChange={handlePostChange} className="w-full p-2 border rounded">
+                    <option value="yellow">Yellow</option>
+                    <option value="black">Black</option>
+                </select>
+            </div>
+        </div>
+    );
+
+    return(
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full relative shadow-xl max-h-[90vh] overflow-y-auto">
+                <button onClick={onClose} className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600">
+                    <CloseIcon className="w-6 h-6" />
+                </button>
+                <form onSubmit={handleSubmit}>
+                    <h2 className="text-xl font-bold mb-4 text-gray-800" style={{fontFamily: "'Playfair Display', serif"}}>
+                        Submit New {content.type === 'product' ? 'Product' : 'Blog Post'}
+                    </h2>
+                    {content.type === 'product' ? renderProductForm() : renderPostForm()}
+                    <button type="submit" className="w-full mt-4 bg-gray-800 text-white py-3 rounded-full font-semibold hover:bg-gray-700 transition-colors">
+                        Submit for Review
+                    </button>
+                    <p className="text-xs text-gray-500 text-center mt-2">Your submission will be reviewed by a Super Admin.</p>
+                </form>
+            </div>
+        </div>
+    );
+};
+
 interface DashboardScreenProps {
   onBack: () => void;
   allProducts: Product[];
+  onAddNewProduct: (data: { title: string, description: string }) => void;
+  onAddNewPost: (data: Omit<BlogPost, 'id' | 'author' | 'date' | 'status'>) => void;
 }
-
-type Tab = 'overview' | 'content' | 'users' | 'insights';
-type ModalContent = null | { type: 'product' } | { type: 'post' };
 
 const StatCard: React.FC<{title: string; value: string | number;}> = ({title, value}) => (
     <div className="bg-gray-100 p-4 lg:p-6 rounded-lg text-center">
@@ -19,37 +124,7 @@ const StatCard: React.FC<{title: string; value: string | number;}> = ({title, va
     </div>
 );
 
-const AddContentModal: React.FC<{content: ModalContent; onClose: () => void;}> = ({ content, onClose }) => {
-    if (!content) return null;
-    return(
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4">
-            <div className="bg-white rounded-lg p-6 max-w-sm w-full relative shadow-xl">
-                 <button onClick={onClose} className="absolute top-2 right-2 p-2 text-gray-400 hover:text-gray-600">
-                    <CloseIcon className="w-6 h-6" />
-                </button>
-                <h2 className="text-xl font-bold mb-4 text-gray-800" style={{fontFamily: "'Playfair Display', serif"}}>
-                    Submit New {content.type === 'product' ? 'Product' : 'Blog Post'}
-                </h2>
-                <form className="space-y-4 text-sm">
-                    <div>
-                        <label className="text-gray-600 font-medium">Title / Product Name</label>
-                        <input type="text" placeholder="e.g. 'Mid-Century Modern Sofa'" className="w-full mt-1 p-2 border border-gray-300 rounded-md"/>
-                    </div>
-                     <div>
-                        <label className="text-gray-600 font-medium">Description</label>
-                        <textarea placeholder="e.g. 'A beautiful sofa...'" className="w-full mt-1 p-2 border border-gray-300 rounded-md h-24"></textarea>
-                    </div>
-                    <button type="submit" onClick={(e) => {e.preventDefault(); onClose();}} className="w-full bg-gray-800 text-white py-3 rounded-full font-semibold hover:bg-gray-700 transition-colors">
-                        Submit for Review
-                    </button>
-                    <p className="text-xs text-gray-500 text-center">Your submission will be reviewed by a Super Admin.</p>
-                </form>
-            </div>
-        </div>
-    )
-};
-
-const DashboardScreen: React.FC<DashboardScreenProps> = ({ onBack, allProducts }) => {
+const DashboardScreen: React.FC<DashboardScreenProps> = ({ onBack, allProducts, onAddNewProduct, onAddNewPost }) => {
   const { user, updateUserRole } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [modalContent, setModalContent] = useState<ModalContent>(null);
@@ -64,6 +139,14 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onBack, allProducts }
     setPendingPosts(BLOG_POSTS.filter(p => p.status === 'pending'));
   }, [allProducts]);
   
+  const handleSaveContent = (type: 'product' | 'post', data: any) => {
+    if (type === 'product') {
+        onAddNewProduct(data);
+    } else {
+        onAddNewPost(data);
+    }
+  };
+
   const getInventoryInsights = () => {
     const now = new Date();
     return allProducts
@@ -137,7 +220,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ onBack, allProducts }
 
   return (
     <>
-    <AddContentModal content={modalContent} onClose={() => setModalContent(null)} />
+    <AddContentModal 
+        content={modalContent} 
+        onClose={() => setModalContent(null)} 
+        onSave={handleSaveContent} 
+    />
     <div className="bg-[#F9F5F0] min-h-screen">
       <header className="p-4 bg-white shadow-sm flex items-center sticky top-0 z-10">
         <div className="container mx-auto flex items-center">

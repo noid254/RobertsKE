@@ -12,11 +12,12 @@ const formatPrice = (price: number) => {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
-  const imageUrl = product.variants[0]?.images[0] || '';
+  const imageUrl = product.variants?.[0]?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image';
   const salePrice = product.sale ? product.price * (1 - product.sale.discount) : null;
   const preOrderPrice = product.preOrder ? product.price * (1 - product.preOrder.discount) : null;
 
   const displayPrice = salePrice ?? preOrderPrice ?? product.price;
+  const originalPrice = product.originalPrice || product.price;
 
   return (
     <div className="flex flex-col cursor-pointer group" onClick={onClick}>
@@ -28,29 +29,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           className="w-full h-48 lg:h-56 object-cover group-hover:scale-105 transition-transform duration-300" 
         />
         {product.sale && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">SALE</div>
+            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                -{Math.round(product.sale.discount * 100)}%
+            </div>
         )}
-        {product.preOrder && (
-            <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">PRE-ORDER</div>
+        {product.preOrder && !product.sale && (
+            <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                PRE-ORDER
+            </div>
         )}
       </div>
-      <h3 className="font-semibold text-sm text-gray-800 group-hover:text-gray-900">{product.name}</h3>
-      <p className="text-xs text-gray-500 mb-1">{product.category}</p>
-      <div className="flex items-center justify-between mt-auto">
-        <div>
-            {(salePrice || preOrderPrice) ? (
-                <div>
-                    <span className="font-bold text-sm text-red-600">{formatPrice(displayPrice)}</span>
-                    <span className="text-xs text-gray-500 line-through ml-2">{formatPrice(product.price)}</span>
-                </div>
-            ) : (
-                <span className="font-bold text-sm text-gray-900">{formatPrice(product.price)}</span>
-            )}
-        </div>
-        <div className="flex items-center">
-            <StarRating rating={product.rating} small />
-        </div>
+      <h3 className="text-sm font-semibold text-gray-800 truncate group-hover:text-black transition-colors">{product.name}</h3>
+      <div className="flex items-center my-1">
+        <StarRating rating={product.rating} small={true}/>
+        <span className="text-xs text-gray-400 ml-1">({product.reviewCount})</span>
       </div>
+      <p className="text-base font-bold text-gray-900">
+        {formatPrice(displayPrice)}
+        { (salePrice || preOrderPrice) && <span className="text-sm text-gray-400 line-through ml-2">{formatPrice(originalPrice)}</span> }
+      </p>
     </div>
   );
 };

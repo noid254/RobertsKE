@@ -2,16 +2,17 @@ import React from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type SearchState } from '../types';
+import { type View } from '../App';
 
 interface SearchResultsScreenProps {
   onBack: () => void;
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   searchState: SearchState;
 }
 
-const SearchResultsScreen: React.FC<SearchResultsScreenProps> = ({ onBack, onProductClick, onNavigate, onSearch, searchState }) => {
+const SearchResultsScreen: React.FC<SearchResultsScreenProps> = ({ onBack, onProductClick, onNavigate, onToggleSearch, searchState }) => {
   const { query, results } = searchState;
 
   return (
@@ -20,7 +21,7 @@ const SearchResultsScreen: React.FC<SearchResultsScreenProps> = ({ onBack, onPro
         onBack={onBack} 
         onNavigate={onNavigate}
         isSticky={true}
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main className="pt-16 lg:pt-20">

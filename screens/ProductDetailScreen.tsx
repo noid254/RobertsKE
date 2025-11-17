@@ -8,12 +8,13 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useSavedItems } from '../context/SavedItemsContext';
 import { USERS } from '../constants';
+import { type View } from '../App';
 
 interface ProductDetailScreenProps {
   product: Product;
   onBack: () => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   allProducts: Product[];
   onProductClick: (product: Product) => void;
 }
@@ -22,9 +23,43 @@ const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBack, onNavigate, onSearch, allProducts, onProductClick }) => {
+const linkify = (text: string): React.ReactNode[] => {
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  if (!text) return [text];
+  
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part && part.match(urlRegex)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{part}</a>;
+    }
+    return part;
+  });
+};
+
+const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBack, onNavigate, onToggleSearch, allProducts, onProductClick }) => {
+  if (!product || !product.variants || product.variants.length === 0) {
+    return (
+      <div className="bg-white min-h-screen">
+        <Header 
+          onBack={onBack} 
+          onNavigate={onNavigate}
+          onToggleSearch={onToggleSearch}
+          isSticky={true} 
+        />
+        <main className="pt-20 container mx-auto text-center p-4">
+          <h1 className="text-2xl font-bold text-red-600">Product Unavailable</h1>
+          <p className="text-gray-600 mt-2">The product you are looking for is either missing information or no longer available.</p>
+          <button onClick={onBack} className="mt-6 bg-gray-800 text-white py-2 px-6 rounded-full font-semibold">
+            Go Back
+          </button>
+        </main>
+      </div>
+    );
+  }
+
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(product.variants[0]);
-  const [mainImage, setMainImage] = useState<string>(product.variants[0].images[0]);
+  const [mainImage, setMainImage] = useState<string>(product.variants[0]?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image');
   const { addToCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const { addSavedItem, removeSavedItem, isSaved } = useSavedItems();
@@ -35,7 +70,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
 
   const handleVariantSelect = (variant: ProductVariant) => {
     setSelectedVariant(variant);
-    setMainImage(variant.images[0]);
+    setMainImage(variant.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image');
   }
 
   const handleToggleSavedItem = () => {
@@ -64,7 +99,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
       <Header 
         onBack={onBack} 
         onNavigate={onNavigate}
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
         isSticky={true} 
       />
       <main className="pt-16 lg:pt-20">
@@ -76,7 +111,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
                         <img src={mainImage} alt={product.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="grid grid-cols-4 gap-4">
-                        {selectedVariant.images.slice(0, 4).map((img, index) => (
+                        {(selectedVariant?.images || []).slice(0, 4).map((img, index) => (
                         <div key={index} className="aspect-square w-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer" onClick={() => setMainImage(img)}>
                             <img 
                                 src={img} 
@@ -113,8 +148,8 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
                         )}
                     </div>
                     
-                    <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                        {product.description}
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line">
+                        {linkify(product.description)}
                     </p>
 
                     <div className="space-y-6">

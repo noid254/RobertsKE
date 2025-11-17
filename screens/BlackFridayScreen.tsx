@@ -2,23 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product } from '../types';
+import { type View } from '../App';
 
 interface BlackFridayScreenProps {
   onBack: () => void;
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   deals: Product[];
 }
 
-const BlackFridayScreen: React.FC<BlackFridayScreenProps> = ({ onBack, onProductClick, onNavigate, onSearch, deals }) => {
+const BlackFridayScreen: React.FC<BlackFridayScreenProps> = ({ onBack, onProductClick, onNavigate, onToggleSearch, deals }) => {
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
       <Header 
         onBack={onBack} 
         onNavigate={onNavigate}
         isSticky={true} 
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main className="pt-16 lg:pt-20">

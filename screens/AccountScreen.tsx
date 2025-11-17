@@ -2,10 +2,11 @@ import React, { useContext } from 'react';
 import { ChevronLeftIcon } from '../constants';
 import { AuthContext } from '../context/AuthContext';
 import { type Order } from '../types';
+import { type View } from '../App';
 
 interface AccountScreenProps {
   onBack: () => void;
-  onNavigate: (view: 'signIn' | 'orderDetails', payload?: any) => void;
+  onNavigate: (view: View) => void;
   orders: Order[];
 }
 
@@ -16,14 +17,14 @@ const AccountScreen: React.FC<AccountScreenProps> = ({ onBack, onNavigate, order
     return (
       <div className="max-w-sm mx-auto bg-[#F9F5F0] min-h-screen flex items-center justify-center">
         <p>You are not logged in.</p>
-        <button onClick={() => onNavigate('signIn')} className="text-blue-500 ml-2">Login</button>
+        <button onClick={() => onNavigate({ name: 'signIn' })} className="text-blue-500 ml-2">Login</button>
       </div>
     );
   }
   
   const handleLogout = () => {
     logout();
-    onNavigate('signIn');
+    onNavigate({ name: 'signIn' });
   };
 
   return (
@@ -71,7 +72,7 @@ const AccountScreen: React.FC<AccountScreenProps> = ({ onBack, onNavigate, order
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Order History</h2>
                 <div className="space-y-4">
                 {orders.length > 0 ? orders.map(order => (
-                    <div key={order.id} className="text-sm border-b pb-3 cursor-pointer hover:bg-gray-50 -mx-6 px-6" onClick={() => onNavigate('orderDetails', order)}>
+                    <div key={order.id} className="text-sm border-b pb-3 cursor-pointer hover:bg-gray-50 -mx-6 px-6" onClick={() => onNavigate({ name: 'orderDetails', order })}>
                         <div className="flex justify-between items-center">
                         <p className="font-semibold">{order.id}</p>
                         <p className={`font-medium ${order.status === 'Delivered' ? 'text-green-600' : 'text-orange-500'}`}>{order.status}</p>

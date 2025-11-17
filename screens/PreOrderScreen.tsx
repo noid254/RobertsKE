@@ -1,18 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product } from '../types';
-import { FILTER_CATEGORIES } from '../constants';
+import { type Product, type RoomCategory } from '../types';
+import { type View } from '../App';
 
 interface PreOrderScreenProps {
   onBack: () => void;
   allProducts: Product[];
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
+  roomCategories: RoomCategory[];
 }
 
-const PreOrderScreen: React.FC<PreOrderScreenProps> = ({ onBack, allProducts, onProductClick, onNavigate, onSearch }) => {
+const PreOrderScreen: React.FC<PreOrderScreenProps> = ({ onBack, allProducts, onProductClick, onNavigate, onToggleSearch, roomCategories }) => {
   const [activeFilter, setActiveFilter] = useState('All');
 
   const preOrderProducts = useMemo(() => {
@@ -32,13 +33,15 @@ const PreOrderScreen: React.FC<PreOrderScreenProps> = ({ onBack, allProducts, on
     return preOrderProducts.filter(p => p.category === activeFilter);
   }, [activeFilter, preOrderProducts]);
 
+  const filterCategories = ['All', ...roomCategories.map(c => c.name)];
+
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
       <Header 
         onBack={onBack} 
         onNavigate={onNavigate}
         isSticky={true} 
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main className="pt-16 lg:pt-20">
@@ -59,7 +62,7 @@ const PreOrderScreen: React.FC<PreOrderScreenProps> = ({ onBack, allProducts, on
              {/* Filter controls */}
             <div className="mb-6 lg:mb-8 overflow-x-auto scrollbar-hide">
                 <div className="flex justify-center space-x-2 whitespace-nowrap">
-                    {FILTER_CATEGORIES.map(cat => (
+                    {filterCategories.map(cat => (
                         <button key={cat} onClick={() => setActiveFilter(cat)} className={`px-4 py-2 text-sm font-semibold rounded-full ${activeFilter === cat ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'}`}>
                             {cat}
                         </button>

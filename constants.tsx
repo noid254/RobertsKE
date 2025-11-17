@@ -208,230 +208,6 @@ export const PRE_ORDER_CATEGORIES: PreOrderCategory[] = [
     }
 ];
 
-export const ROOM_CATEGORIES: RoomCategory[] = [
-    { 
-        id: 1, 
-        name: 'Doorway', 
-        description: 'Make a lasting first impression.', 
-        imageUrl: 'https://images.unsplash.com/photo-1598602246428-34c82b52d4a4?q=80&w=1887&auto=format&fit=crop', 
-        subCategories: ['All', 'Console Tables', 'Mirrors', 'Coat Racks', 'Benches', 'Decor'], 
-        hero: { 
-            title: 'Welcome Home', 
-            subtitle: 'Style your entryway with pieces that are both beautiful and functional.', 
-            imageUrl: 'https://images.unsplash.com/photo-1598602246428-34c82b52d4a4?q=80&w=1887&auto=format&fit=crop' 
-        },
-        theme: {
-            bgClass: 'bg-gray-50',
-            primaryText: 'text-gray-900',
-            buttonBg: 'bg-gray-800'
-        } 
-    },
-    { 
-        id: 2, 
-        name: 'Living Room', 
-        description: 'Comfortable, stylish, and built for life.', 
-        imageUrl: 'https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=1932&auto=format&fit=crop', 
-        subCategories: ['All', 'Sofas', 'Tables', 'Chairs', 'Rugs', 'Lighting', 'Storage', 'Decor'], 
-        hero: { 
-            title: 'The Heart of Your Home', 
-            subtitle: 'Discover sofas, tables, and decor that bring everyone together.', 
-            imageUrl: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1770&auto=format&fit=crop' 
-        },
-        theme: {
-            bgClass: 'bg-stone-50',
-            primaryText: 'text-stone-900',
-            buttonBg: 'bg-stone-800'
-        } 
-    },
-    { 
-        id: 3, 
-        name: 'Kitchen', 
-        description: 'The heart of the home, beautifully equipped.', 
-        imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a67769e03?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Bar Stools', 'Kitchen Islands', 'Storage', 'Lighting'],
-        hero: { 
-            title: 'Culinary Spaces', 
-            subtitle: 'Equip the heart of your home with functional style and elegance.', 
-            imageUrl: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=1770&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-orange-50',
-            primaryText: 'text-orange-900',
-            buttonBg: 'bg-orange-800'
-        } 
-    },
-    {
-        id: 4,
-        name: 'Dining',
-        description: 'Gather around for meals and memories.',
-        imageUrl: 'https://images.unsplash.com/photo-1554104707-a76b270e4bbb?q=80&w=1964&auto=format&fit=crop',
-        subCategories: ['All', 'Dining Tables', 'Dining Chairs', 'Sideboards', 'Bar Carts'],
-        hero: {
-            title: 'Gather & Feast',
-            subtitle: 'Dine in style with our collection of tables, chairs, and essentials.',
-            imageUrl: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?q=80&w=1770&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-amber-50',
-            primaryText: 'text-amber-900',
-            buttonBg: 'bg-amber-800'
-        }
-    },
-    {
-        id: 5,
-        name: 'Balcony',
-        description: 'Your personal outdoor escape.',
-        imageUrl: 'https://images.unsplash.com/photo-1588820694537-335faf36245c?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Bistro Sets', 'Lounge Chairs', 'Planters', 'Outdoor Rugs'],
-        hero: {
-            title: 'Urban Oasis',
-            subtitle: 'Transform your balcony into a chic and relaxing personal retreat.',
-            imageUrl: 'https://images.unsplash.com/photo-1620628037413-58134763e400?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-cyan-50',
-            primaryText: 'text-cyan-900',
-            buttonBg: 'bg-cyan-800'
-        }
-    },
-    {
-        id: 6,
-        name: 'Boys\' Bedroom',
-        description: 'Adventure awaits in their personal space.',
-        imageUrl: 'https://images.unsplash.com/photo-1571172964276-9f127f84882b?q=80&w=1964&auto=format&fit=crop',
-        subCategories: ['All', 'Beds', 'Desks', 'Storage', 'Bedding', 'Decor'],
-        hero: {
-            title: 'For Young Adventurers',
-            subtitle: 'Create a fun and functional space for play, study, and sleep.',
-            imageUrl: 'https://images.unsplash.com/photo-1593085512500-213c3a44a7a8?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-blue-50',
-            primaryText: 'text-blue-900',
-            buttonBg: 'bg-blue-800'
-        }
-    },
-    {
-        id: 7,
-        name: 'Girls\' Bedroom',
-        description: 'A magical space to dream and grow.',
-        imageUrl: 'https://images.unsplash.com/photo-1503437313881-5e3aa1018f39?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Beds', 'Vanities', 'Bookcases', 'Bedding', 'Decor'],
-        hero: {
-            title: 'A Room to Dream In',
-            subtitle: 'Design a whimsical and inspiring sanctuary for her to grow.',
-            imageUrl: 'https://images.unsplash.com/photo-1585424916375-3c586b4a3c13?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-pink-50',
-            primaryText: 'text-pink-900',
-            buttonBg: 'bg-pink-800'
-        }
-    },
-    {
-        id: 8,
-        name: 'Guest Bedroom',
-        description: 'Make your guests feel right at home.',
-        imageUrl: 'https://images.unsplash.com/photo-1615875952792-793557b4f4c2?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Sofa Beds', 'Nightstands', 'Luggage Racks', 'Bedding'],
-        hero: {
-            title: 'Five-Star Hospitality',
-            subtitle: 'Create a welcoming and comfortable space for your visitors.',
-            imageUrl: 'https://images.unsplash.com/photo-1560185893-a5536c80e6cb?q=80&w=1770&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-teal-50',
-            primaryText: 'text-teal-900',
-            buttonBg: 'bg-teal-800'
-        }
-    },
-    { 
-        id: 9, 
-        name: 'Master Bedroom', 
-        description: 'Create your personal sanctuary.', 
-        imageUrl: 'https://images.unsplash.com/photo-1595526114035-0d45ed16433d?q=80&w=1924&auto=format&fit=crop',
-        subCategories: ['All', 'Beds', 'Dressers', 'Nightstands', 'Accent Chairs', 'Bedding'],
-        hero: { 
-            title: 'Your Personal Sanctuary', 
-            subtitle: 'Find beds, bedding, and storage that create a peaceful retreat.', 
-            imageUrl: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1770&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-slate-50',
-            primaryText: 'text-slate-900',
-            buttonBg: 'bg-slate-800'
-        } 
-    },
-    {
-        id: 10,
-        name: 'Pantry',
-        description: 'Organization that inspires.',
-        imageUrl: 'https://images.unsplash.com/photo-1583274218822-441a2e37f62e?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Shelving Units', 'Storage Bins', 'Canisters', 'Labels'],
-        hero: {
-            title: 'Perfectly Organized',
-            subtitle: 'Streamline your kitchen with our smart pantry storage solutions.',
-            imageUrl: 'https://images.unsplash.com/photo-1629077439113-0a79a886a11e?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-zinc-50',
-            primaryText: 'text-zinc-900',
-            buttonBg: 'bg-zinc-800'
-        }
-    },
-    { 
-        id: 11, 
-        name: 'Backyard', 
-        description: 'Extend your living space outdoors.', 
-        imageUrl: 'https://images.unsplash.com/photo-1613516530434-2e2b3e8a3b3b?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Outdoor Seating', 'Outdoor Tables', 'Planters', 'Decor', 'Lighting'],
-        hero: { 
-            title: 'Your Outdoor Oasis', 
-            subtitle: 'Create a stylish retreat for relaxing and entertaining.', 
-            imageUrl: 'https://images.unsplash.com/photo-1574112521191-383457c74a2b?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-green-50',
-            primaryText: 'text-green-900',
-            buttonBg: 'bg-green-800'
-        } 
-    },
-     { 
-        id: 12, 
-        name: 'Bathroom', 
-        description: 'A stylish and functional retreat.', 
-        imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426f1362?q=80&w=1887&auto=format&fit=crop',
-        subCategories: ['All', 'Vanities', 'Storage', 'Mirrors', 'Bath Mats', 'Accessories'],
-        hero: { 
-            title: 'Spa-Like Serenity', 
-            subtitle: 'Elevate your daily routine with our elegant bathroom essentials.', 
-            imageUrl: 'https://images.unsplash.com/photo-1600572004212-a05ab0357816?q=80&w=1887&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-sky-50',
-            primaryText: 'text-sky-900',
-            buttonBg: 'bg-sky-800'
-        } 
-    },
-    { 
-        id: 13, 
-        name: 'And Beyond', 
-        description: 'For every other corner of your home.', 
-        imageUrl: 'https://images.unsplash.com/photo-1449247709967-d4461a6a6103?q=80&w=1771&auto=format&fit=crop',
-        subCategories: ['All', 'Home Office', 'Study', 'Decor', 'Lighting'],
-        hero: { 
-            title: 'Spaces with Purpose', 
-            subtitle: 'Find pieces for your home office, study, and every space in between.', 
-            imageUrl: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1784&auto=format&fit=crop'
-        },
-        theme: {
-            bgClass: 'bg-indigo-50',
-            primaryText: 'text-indigo-900',
-            buttonBg: 'bg-indigo-800'
-        } 
-    },
-];
-
 export const DECOR_CATEGORIES: DecorCategory[] = [
     { id: 'decor', name: 'Decor', imageUrl: 'https://images.unsplash.com/photo-1542037104-924825dc1274?q=80&w=1887&auto=format&fit=crop' },
     { id: 'flooring', name: 'Flooring', imageUrl: 'https://images.unsplash.com/photo-1582298622948-83055904d6a6?q=80&w=1887&auto=format&fit=crop' },
@@ -443,125 +219,67 @@ export const DECOR_CATEGORIES: DecorCategory[] = [
     { id: 'outdoor', name: 'Outdoor', imageUrl: 'https://images.unsplash.com/photo-1586942416343-9125c13a0c5c?q=80&w=1887&auto=format&fit=crop' },
 ];
 
-
-export const NAV_LINKS = [
-    { name: 'Shop', view: 'shop', payload: null },
-    ...ROOM_CATEGORIES.map(c => ({ name: c.name, view: 'category', payload: c })),
-    { name: 'Inspiration', view: 'blog', payload: null },
-    { name: 'Services', view: 'services', payload: null }
-];
-
-
-export const FILTER_CATEGORIES = ['All', ...ROOM_CATEGORIES.map(c => c.name)];
-
 export const DESIGN_SERVICES: DesignService[] = [
     {
         id: 'consultation',
         name: 'In-Home Design Consultation',
         price: 'KES 10,000',
-        description: 'A 2-hour consultation with one of our expert designers in your home. We\'ll help you define your style, plan your space, and choose the perfect color palette.',
-        features: ['Personalized style assessment', 'Space planning and layout advice', 'Color palette recommendations', 'Actionable shopping list'],
-        imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop'
+        description: 'A 2-hour consultation at your Nairobi home. We will discuss your vision, assess your space, and provide initial concepts and a color palette.',
+        features: ['Personalized Mood Board', 'Space Planning Advice', 'Color Palette Selection', 'Product Recommendations'],
+        imageUrl: 'https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=1770&auto=format&fit=crop'
     },
     {
         id: 'full-service',
         name: 'Full-Service Interior Design',
-        price: 'Starts at KES 50,000 / room',
-        description: 'From concept to completion, we handle every detail of your design project. This package is perfect for new homes or full-scale renovations.',
-        features: ['Complete room design concepts', 'Furniture & material sourcing', 'Project management & installation', 'The final, beautiful reveal'],
-        imageUrl: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?q=80&w=1858&auto=format&fit=crop'
+        price: 'Project-Based',
+        description: 'Our comprehensive package covers everything from concept to completion. We manage the entire project, including sourcing, procurement, and installation.',
+        features: ['Full Project Management', 'Custom Furniture Design', 'Contractor Coordination', 'Styling & Finishing Touches'],
+        imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop'
     }
 ];
 
-// ICONS
-// ... all existing icons
-
-// FIX: Removed placeholder and re-exported icons to resolve redeclaration errors.
-
-export const MenuIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-  </svg>
-);
-
-export const SearchIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-  </svg>
-);
-
-export const CartIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-  </svg>
-);
-
-export const HeartIcon = ({ className = "w-6 h-6", isFilled = false }: { className?: string; isFilled?: boolean }) => (
-    <svg className={className} fill={isFilled ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
+export const HeartIcon: React.FC<{className?: string; isFilled?: boolean}> = ({ className, isFilled }) => (
+    <svg className={className} fill={isFilled ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 21l-7.682-7.682a4.5 4.5 0 010-6.364z" />
     </svg>
 );
 
-export const ChevronLeftIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
+export const WhatsAppIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 4.315 1.731 6.086l.287.468-1.173 4.249 4.35-1.14z" /></svg>
 );
 
-export const ChevronRightIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-    </svg>
+export const MenuIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+);
+export const SearchIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+);
+export const CartIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+);
+export const ChevronLeftIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+);
+export const ChevronRightIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+);
+export const CloseIcon: React.FC<{className?: string}> = ({ className }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
 );
 
-export const CloseIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-  </svg>
+export const AccountIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+);
+export const BookmarkIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+);
+export const DashboardIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
 );
 
-export const WhatsAppIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M16.75 13.96c.25.13.42.2.55.32.13.13.19.29.19.52s-.06.46-.19.58c-.13.13-.29.19-.52.19h-.1a10.43 10.43 0 01-1.6-.19c-.52-.19-1.01-.45-1.47-.78a6.39 6.39 0 01-1.34-1.34c-.32-.46-.58-.95-.78-1.47a10.43 10.43 0 01-.19-1.6V10c0-.23.06-.39.19-.52s.29-.19.52-.19h.1c.23 0 .39.06.52.19.13.13.2.29.32.55s.19.52.26.78c.06.26.13.52.19.72s.13.39.19.52zM12 2a10 10 0 00-10 10c0 1.75.46 3.5 1.34 5.03L2 22l5.25-1.34A9.95 9.95 0 0012 22a10 10 0 0010-10A10 10 0 0012 2z"></path>
-    </svg>
+export const EditIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
 );
-
-export const AccountIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-    </svg>
-);
-
-export const BookmarkIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
-    </svg>
-);
-
-export const DashboardIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-    </svg>
-);
-
-export const BlogIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7"></path>
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 18h5"></path>
-    </svg>
-);
-
-export const ServicesIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-    </svg>
-);
-
-export const EditIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-);
-
-export const PlusIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+export const PlusIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
 );

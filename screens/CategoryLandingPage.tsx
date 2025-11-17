@@ -2,23 +2,38 @@ import React from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type PreOrderCategory, type Product } from '../types';
+import { type View } from '../App';
 
 interface CategoryLandingPageProps {
   onBack: () => void;
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   category: PreOrderCategory;
 }
 
-const CategoryLandingPage: React.FC<CategoryLandingPageProps> = ({ onBack, onProductClick, onNavigate, onSearch, category }) => {
+const linkify = (text: string): React.ReactNode[] => {
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  if (!text) return [text];
+  
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part && part.match(urlRegex)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{part}</a>;
+    }
+    return part;
+  });
+};
+
+const CategoryLandingPage: React.FC<CategoryLandingPageProps> = ({ onBack, onProductClick, onNavigate, onToggleSearch, category }) => {
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
         <Header 
             onBack={onBack} 
             onNavigate={onNavigate}
             isSticky={true}
-            onSearch={onSearch}
+            onToggleSearch={onToggleSearch}
         />
 
         <main className="pt-16 lg:pt-20">
@@ -34,7 +49,7 @@ const CategoryLandingPage: React.FC<CategoryLandingPageProps> = ({ onBack, onPro
             
             <div className="bg-white">
                 <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-                    <p className="text-gray-600 leading-relaxed">{category.blog.content}</p>
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-line">{linkify(category.blog.content)}</p>
                 </div>
             </div>
             

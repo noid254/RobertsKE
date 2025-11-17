@@ -2,21 +2,24 @@ import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory } from '../types';
-import { ROOM_CATEGORIES, CloseIcon } from '../constants';
+import { CloseIcon } from '../constants';
+import { type View } from '../App';
 
 interface ShopScreenProps {
   allProducts: Product[];
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
+  roomCategories: RoomCategory[];
 }
 
 const FilterPanel: React.FC<{
+  allCategories: RoomCategory[];
   activeCategory: RoomCategory | null;
   activeSubCategory: string;
   onCategoryClick: (category: RoomCategory | null) => void;
   onSubCategoryClick: (subCategory: string) => void;
-}> = ({ activeCategory, activeSubCategory, onCategoryClick, onSubCategoryClick }) => {
+}> = ({ allCategories, activeCategory, activeSubCategory, onCategoryClick, onSubCategoryClick }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Shop by Category</h3>
@@ -29,7 +32,7 @@ const FilterPanel: React.FC<{
               All Products
             </button>
         </li>
-        {ROOM_CATEGORIES.map(cat => (
+        {allCategories.map(cat => (
           <li key={cat.id}>
             <button
               onClick={() => onCategoryClick(cat)}
@@ -81,7 +84,7 @@ const MobileFilterModal: React.FC<{
 };
 
 
-const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, onNavigate, onSearch }) => {
+const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, onNavigate, onToggleSearch, roomCategories }) => {
   const [activeCategory, setActiveCategory] = useState<RoomCategory | null>(null);
   const [activeSubCategory, setActiveSubCategory] = useState('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -108,6 +111,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
     <>
     <MobileFilterModal isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)}>
         <FilterPanel 
+            allCategories={roomCategories}
             activeCategory={activeCategory}
             activeSubCategory={activeSubCategory}
             onCategoryClick={(cat) => {
@@ -126,7 +130,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
       <Header 
         isSticky={true}
         onNavigate={onNavigate}
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main className="pt-16 lg:pt-20">
@@ -141,6 +145,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
                 <aside className="hidden lg:block lg:col-span-1">
                   <div className="sticky top-24">
                     <FilterPanel 
+                        allCategories={roomCategories}
                         activeCategory={activeCategory}
                         activeSubCategory={activeSubCategory}
                         onCategoryClick={handleCategoryClick}

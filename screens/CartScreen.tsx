@@ -3,18 +3,21 @@ import Header from '../components/Header';
 import { CartContext } from '../context/CartContext';
 import { type Product } from '../types';
 import { CloseIcon } from '../constants';
+import { type View } from '../App';
 
 interface CartScreenProps {
   onBack: () => void;
   onProductClick: (product: Product) => void;
   onCheckout: () => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
 }
 
 const formatPrice = (price: number) => {
     return `KES ${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-const CartScreen: React.FC<CartScreenProps> = ({ onBack, onProductClick, onCheckout }) => {
+const CartScreen: React.FC<CartScreenProps> = ({ onBack, onProductClick, onCheckout, onNavigate, onToggleSearch }) => {
   const { cart, updateQuantity, removeFromCart } = useContext(CartContext);
 
   const subtotal = cart.reduce((acc, item) => {
@@ -31,7 +34,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ onBack, onProductClick, onCheck
 
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
-      <Header onBack={onBack} isSticky={true} />
+      <Header onBack={onBack} isSticky={true} onNavigate={onNavigate} onToggleSearch={onToggleSearch} />
 
       <main className="pt-16 lg:pt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -52,7 +55,7 @@ const CartScreen: React.FC<CartScreenProps> = ({ onBack, onProductClick, onCheck
                 {cart.map(item => (
                     <div key={`${item.id}-${item.selectedVariant.colorName}`} className="flex bg-white p-4 rounded-lg shadow-sm">
                     <img 
-                        src={item.selectedVariant.images[0]} 
+                        src={item.selectedVariant?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image'} 
                         alt={item.name} 
                         className="w-24 h-24 lg:w-32 lg:h-32 object-cover rounded-md cursor-pointer"
                         onClick={() => onProductClick(item)}

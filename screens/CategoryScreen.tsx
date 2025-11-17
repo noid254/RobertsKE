@@ -2,38 +2,41 @@ import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory, User } from '../types';
-import { ROOM_CATEGORIES, CloseIcon, EditIcon } from '../constants';
+import { CloseIcon, EditIcon } from '../constants';
+import { type View } from '../App';
 
 interface CategoryScreenProps {
   category: RoomCategory;
   allProducts: Product[];
   onBack: () => void;
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   user: User | null;
   onEditRequest: (type: 'category', data: any) => void;
+  roomCategories: RoomCategory[];
 }
 
 const FilterPanel: React.FC<{
-  category: RoomCategory;
+  allCategories: RoomCategory[];
+  currentCategory: RoomCategory;
   activeSubCategory: string;
   onSubCategoryClick: (subCategory: string) => void;
   onCategoryClick: (category: RoomCategory) => void;
-}> = ({ category, activeSubCategory, onSubCategoryClick, onCategoryClick }) => {
+}> = ({ allCategories, currentCategory, activeSubCategory, onSubCategoryClick, onCategoryClick }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Categories</h3>
       <ul className="space-y-2">
-        {ROOM_CATEGORIES.map(cat => (
+        {allCategories.map(cat => (
           <li key={cat.id}>
             <button
               onClick={() => onCategoryClick(cat)}
-              className={`w-full text-left font-semibold ${cat.id === category.id ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+              className={`w-full text-left font-semibold ${cat.id === currentCategory.id ? 'text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
             >
               {cat.name}
             </button>
-            {cat.id === category.id && (
+            {cat.id === currentCategory.id && (
               <ul className="pl-4 mt-2 space-y-2 border-l">
                 {cat.subCategories.map(sub => (
                   <li key={sub}>
@@ -54,7 +57,7 @@ const FilterPanel: React.FC<{
   );
 };
 
-const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, onBack, onProductClick, onNavigate, onSearch, user, onEditRequest }) => {
+const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, onBack, onProductClick, onNavigate, onToggleSearch, user, onEditRequest, roomCategories }) => {
   const [activeSubCategory, setActiveSubCategory] = useState('All');
   
   const productsForCategory = useMemo(() => {
@@ -67,7 +70,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, 
   }, [activeSubCategory, productsForCategory]);
 
   const handleCategoryChange = (newCategory: RoomCategory) => {
-      onNavigate('category', newCategory);
+      onNavigate({ name: 'category', category: newCategory });
   }
 
   return (
@@ -76,7 +79,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, 
         onBack={onBack}
         isSticky={true}
         onNavigate={onNavigate}
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main className="pt-16 lg:pt-20">
@@ -88,8 +91,8 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, 
             <p className="mt-2 max-w-md mx-auto">{category.hero.subtitle}</p>
           </div>
           {user?.role === 'super-admin' && (
-             <button onClick={() => onEditRequest('category', category)} className="absolute top-4 right-4 z-20 bg-white/80 text-gray-800 rounded-full p-2 shadow-md hover:bg-white transition-all">
-                <EditIcon className="w-5 h-5" />
+             <button onClick={() => onEditRequest('category', category)} className="absolute top-4 right-4 z-20 bg-white/80 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-lg hover:bg-white transition-all flex items-center gap-2">
+                <EditIcon className="w-4 h-4" /> Edit Category
             </button>
           )}
         </section>
@@ -100,7 +103,8 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ category, allProducts, 
                 <aside className="hidden lg:block lg:col-span-1">
                   <div className="sticky top-24">
                     <FilterPanel 
-                      category={category}
+                      allCategories={roomCategories}
+                      currentCategory={category}
                       activeSubCategory={activeSubCategory}
                       onSubCategoryClick={setActiveSubCategory}
                       onCategoryClick={handleCategoryChange}

@@ -1,4 +1,5 @@
 
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { type Product } from '../types';
 
@@ -20,9 +21,23 @@ export const SavedItemsProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [savedItems, setSavedItems] = useState<Product[]>(() => {
     try {
       const localData = window.localStorage.getItem('roberts-saved-items');
-      return localData ? JSON.parse(localData) : [];
+      if (!localData) return [];
+
+      const parsedData = JSON.parse(localData) as Product[];
+      // Validate data from localStorage to prevent crashes from corrupted/old data structures.
+      const validItems = parsedData.filter(item =>
+        item && typeof item.id === 'number' && typeof item.name === 'string' && Array.isArray(item.variants)
+      );
+
+      if (validItems.length < parsedData.length) {
+        console.warn('Removed one or more invalid items from saved items loaded from localStorage.');
+      }
+      
+      return validItems;
+
     } catch (error) {
       console.error("Could not parse saved items from localStorage", error);
+      window.localStorage.removeItem('roberts-saved-items');
       return [];
     }
   });

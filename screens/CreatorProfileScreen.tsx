@@ -2,20 +2,37 @@ import React from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type User, type Product } from '../types';
+import { type View } from '../App';
 
 interface CreatorProfileScreenProps {
   creator: User;
   onBack: () => void;
   onProductClick: (product: Product) => void;
   allProducts: Product[];
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
 }
 
-const CreatorProfileScreen: React.FC<CreatorProfileScreenProps> = ({ creator, onBack, onProductClick, allProducts }) => {
+const linkify = (text: string): React.ReactNode[] => {
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  if (!text) return [text];
+  
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part && part.match(urlRegex)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{part}</a>;
+    }
+    return part;
+  });
+};
+
+const CreatorProfileScreen: React.FC<CreatorProfileScreenProps> = ({ creator, onBack, onProductClick, allProducts, onNavigate, onToggleSearch }) => {
   const creatorProducts = allProducts.filter(p => p.creatorId === creator.phone && p.status === 'published');
 
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
-      <Header onBack={onBack} isSticky={true} />
+      <Header onBack={onBack} isSticky={true} onNavigate={onNavigate} onToggleSearch={onToggleSearch}/>
 
       <main className="pt-16 lg:pt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -23,7 +40,7 @@ const CreatorProfileScreen: React.FC<CreatorProfileScreenProps> = ({ creator, on
             <img src={creator.avatarUrl} alt={creator.name} className="w-24 h-24 rounded-full object-cover"/>
             <div className="text-center sm:text-left">
                 <h1 className="text-3xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{creator.name}</h1>
-                <p className="text-base text-gray-600 mt-1 max-w-xl">{creator.bio}</p>
+                <p className="text-base text-gray-600 mt-1 max-w-xl whitespace-pre-line">{linkify(creator.bio)}</p>
             </div>
             </div>
 

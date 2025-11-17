@@ -8,6 +8,20 @@ interface PortfolioScreenProps {
   onProductClick: (product: Product) => void;
 }
 
+const linkify = (text: string): React.ReactNode[] => {
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  if (!text) return [text];
+  
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part && part.match(urlRegex)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{part}</a>;
+    }
+    return part;
+  });
+};
+
 const PortfolioScreen: React.FC<PortfolioScreenProps> = ({ onBack, onProductClick }) => {
   return (
     <div className="bg-[#F9F5F0] min-h-screen">
@@ -36,7 +50,7 @@ const PortfolioScreen: React.FC<PortfolioScreenProps> = ({ onBack, onProductClic
                     <div className="p-6">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{item.category}</p>
                         <h3 className="text-xl lg:text-2xl font-bold text-gray-800 mt-1" style={{fontFamily: "'Playfair Display', serif"}}>{item.title}</h3>
-                        <p className="text-sm text-gray-600 mt-2">{item.description}</p>
+                        <p className="text-sm text-gray-600 mt-2 whitespace-pre-line">{linkify(item.description)}</p>
                     </div>
                 </div>
             ))}

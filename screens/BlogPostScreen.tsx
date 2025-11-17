@@ -1,17 +1,34 @@
 import React from 'react';
 import Header from '../components/Header';
 import { type BlogPost } from '../types';
+import { type View } from '../App';
 
 interface BlogPostScreenProps {
   post: BlogPost;
   onBack: () => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
 }
 
-const BlogPostScreen: React.FC<BlogPostScreenProps> = ({ post, onBack }) => {
+const linkify = (text: string): React.ReactNode[] => {
+  const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  if (!text) return [text];
+  
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, i) => {
+    if (part && part.match(urlRegex)) {
+      return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{part}</a>;
+    }
+    return part;
+  });
+};
+
+const BlogPostScreen: React.FC<BlogPostScreenProps> = ({ post, onBack, onNavigate, onToggleSearch }) => {
 
   return (
     <div className="bg-white min-h-screen">
-      <Header onBack={onBack} isSticky={true} />
+      <Header onBack={onBack} isSticky={true} onNavigate={onNavigate} onToggleSearch={onToggleSearch}/>
 
       <main className="pt-16 lg:pt-20">
         <div className="relative h-64 lg:h-96">
@@ -31,7 +48,7 @@ const BlogPostScreen: React.FC<BlogPostScreenProps> = ({ post, onBack }) => {
                 <span>{post.date}</span>
             </div>
             <div className="prose lg:prose-lg text-gray-700 leading-relaxed whitespace-pre-line">
-              {post.content}
+              {linkify(post.content)}
             </div>
         </div>
       </main>

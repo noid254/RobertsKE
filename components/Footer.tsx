@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-type NavigateFunction = (view: any, payload?: any) => void;
+import { type View } from '../App';
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
     <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
@@ -8,7 +7,7 @@ const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ hre
     </a>
 );
 
-const FooterLink: React.FC<{ view: any, label: string, onNavigate?: NavigateFunction }> = ({ view, label, onNavigate }) => (
+const FooterLink: React.FC<{ view: View, label: string, onNavigate?: (view: View) => void }> = ({ view, label, onNavigate }) => (
     <button onClick={() => onNavigate && onNavigate(view)} className="text-gray-300 hover:text-white transition-colors text-left">
         {label}
     </button>
@@ -65,7 +64,7 @@ const WhatsAppSignupForm: React.FC = () => {
     );
 }
 
-const Footer: React.FC<{ onNavigate?: NavigateFunction }> = ({ onNavigate }) => {
+const Footer: React.FC<{ onNavigate?: (view: View) => void }> = ({ onNavigate }) => {
   return (
     <footer className="bg-gray-800 text-white">
       <div className="container mx-auto p-6 lg:p-12">
@@ -76,15 +75,15 @@ const Footer: React.FC<{ onNavigate?: NavigateFunction }> = ({ onNavigate }) => 
             <div className="text-sm">
                 <h4 className="font-bold mb-4">Company</h4>
                 <ul className="space-y-3">
-                    <li><FooterLink view="portfolio" label="Our Work" onNavigate={onNavigate} /></li>
-                    <li><FooterLink view="blog" label="Inspiration" onNavigate={onNavigate} /></li>
-                    <li><FooterLink view="services" label="Services" onNavigate={onNavigate} /></li>
+                    <li><FooterLink view={{ name: 'portfolio' }} label="Our Work" onNavigate={onNavigate} /></li>
+                    <li><FooterLink view={{ name: 'blog' }} label="Inspiration" onNavigate={onNavigate} /></li>
+                    <li><FooterLink view={{ name: 'services' }} label="Services" onNavigate={onNavigate} /></li>
                 </ul>
             </div>
             <div className="text-sm">
                 <h4 className="font-bold mb-4">Support</h4>
                  <ul className="space-y-3">
-                    <li><FooterLink view="account" label="My Account" onNavigate={onNavigate} /></li>
+                    <li><FooterLink view={{ name: 'account' }} label="My Account" onNavigate={onNavigate} /></li>
                     <li><p className="text-gray-300">FAQs</p></li>
                     <li><p className="text-gray-300">Contact Us</p></li>
                 </ul>

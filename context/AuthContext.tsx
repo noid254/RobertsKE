@@ -5,10 +5,10 @@ import { USERS } from '../constants';
 export const AuthContext = createContext<AuthContextType>({
     user: null,
     isAuthenticated: false,
-    login: () => false,
+    login: (phone, otp) => false,
     logout: () => {},
-    signup: () => false,
-    updateUserRole: () => {},
+    signup: (details) => false,
+    updateUserRole: (phone, role) => {},
 });
 
 // Mock user database stored in localStorage for simulation
@@ -38,19 +38,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         // Check for saved user session on initial load
         try {
-            const savedUser = window.localStorage.getItem('roberts-user-session');
-            if (savedUser) {
-                const parsedUser: User = JSON.parse(savedUser);
-                const userExists = usersDB.some(u => u.phone === parsedUser.phone);
-                if(userExists) {
-                    setUser(parsedUser);
-                    setIsAuthenticated(true);
+            const savedUserJSON = window.localStorage.getItem('roberts-user-session');
+            if (savedUserJSON) {
+                const savedUser: Partial<User> = JSON.parse(savedUserJSON);
+                
+                // Validate that the saved user has a phone number to look up
+                if (savedUser && typeof savedUser.phone === 'string') {
+                    const fullUserFromDB = usersDB.find(u => u.phone === savedUser.phone);
+                    
+                    if (fullUserFromDB) {
+                        // Found the user in our current "database". Use this fresh data.
+                        setUser(fullUserFromDB);
+                        setIsAuthenticated(true);
+                        
+                        // Optional: Resync localStorage with the fresh data to keep it updated.
+                        if (JSON.stringify(fullUserFromDB) !== savedUserJSON) {
+                            window.localStorage.setItem('roberts-user-session', JSON.stringify(fullUserFromDB));
+                        }
+                    } else {
+                        // User in session doesn't exist in the DB anymore. Clear session.
+                        setUser(null);
+                        setIsAuthenticated(false);
+                        window.localStorage.removeItem('roberts-user-session');
+                    }
                 } else {
-                     window.localStorage.removeItem('roberts-user-session');
+                    // The saved session object is invalid/corrupted. Clear it.
+                    setUser(null);
+                    setIsAuthenticated(false);
+                    window.localStorage.removeItem('roberts-user-session');
                 }
             }
         } catch (error) {
             console.error("Could not parse user session", error);
+            setUser(null);
+            setIsAuthenticated(false);
             window.localStorage.removeItem('roberts-user-session');
         }
     }, [usersDB]);
@@ -59,15 +80,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const foundUser = usersDB.find(u => u.phone === phone);
         if (!foundUser) return false;
 
-        const isSuperAdmin = phone === '+254723119356' && otp === '3232';
-        const isNormalUser = otp === '1234';
-
-        if (isSuperAdmin || isNormalUser) {
+        const correctOtp = (foundUser.phone === '+254723119356') ? '3232' : '1234';
+        
+        if (otp === correctOtp) {
             setUser(foundUser);
             setIsAuthenticated(true);
             window.localStorage.setItem('roberts-user-session', JSON.stringify(foundUser));
             return true;
         }
+        
         return false;
     };
 
@@ -77,13 +98,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         window.localStorage.removeItem('roberts-user-session');
     };
     
-    const signup = (details: Omit<User, 'role'>): boolean => {
+    const signup = (details: Omit<User, 'role' | 'bio' | 'avatarUrl'>): boolean => {
         const userExists = usersDB.some(u => u.phone === details.phone);
         if (userExists) {
             alert('A user with this phone number already exists.');
             return false;
         }
-        const newUser: User = { ...details, role: 'customer' };
+        const newUser: User = { 
+            ...details, 
+            role: 'customer',
+            bio: 'New Roberts Indoor Solutions customer.',
+            avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(details.name)}&background=random`,
+        };
         setUsersDB(prev => [...prev, newUser]);
         
         // Automatically log in the new user

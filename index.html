@@ -3,9 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
     <title>Roberts Indoor Solutions | Home Decor in Nairobi, Kenya</title>
     <meta name="description" content="Discover unique and sustainable home decor at Roberts Indoor Solutions, Nairobi's top choice for furniture, lighting, and interior design services. Shop our curated collections for your Kenyan home." />
     <meta name="keywords" content="home decor Kenya, furniture Nairobi, interior design Kenya, Roberts Indoor Solutions, lighting, rugs, modern furniture Kenya" />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.robertsindoorsolutions.co.ke/" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.robertsindoorsolutions.co.ke/">
+    <meta property="og:title" content="Roberts Indoor Solutions | Home Decor in Nairobi, Kenya">
+    <meta property="og:description" content="Discover unique and sustainable home decor at Roberts Indoor Solutions, Nairobi's top choice for furniture, lighting, and interior design services.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format=fit=crop">
+    <meta property="og:site_name" content="Roberts Indoor Solutions">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.robertsindoorsolutions.co.ke/">
+    <meta name="twitter:title" content="Roberts Indoor Solutions | Home Decor in Nairobi, Kenya">
+    <meta name="twitter:description" content="Discover unique and sustainable home decor at Roberts Indoor Solutions, Nairobi's top choice for furniture, lighting, and interior design services.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format=fit=crop">
     
     <!-- PWA and Mobile-Friendly Tags -->
     <link rel="manifest" href="/manifest.json" />
@@ -20,6 +43,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/index.css">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Roberts Indoor Solutions",
+      "url": "https://www.robertsindoorsolutions.co.ke/",
+      "logo": "https://www.robertsindoorsolutions.co.ke/icons/icon-512x512.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+254723119356",
+        "contactType": "customer service",
+        "email": "admin@roberts.com"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1 Admin Way, Westlands",
+        "addressLocality": "Nairobi",
+        "addressCountry": "KE"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://www.robertsindoorsolutions.co.ke/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.robertsindoorsolutions.co.ke/?s={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
   <script type="importmap">
 {
   "imports": {
@@ -29,8 +91,44 @@
   }
 }
 </script>
+
+  <style>
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #F9F5F0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease-in-out;
+      opacity: 1;
+    }
+    #splash-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .splash-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: #374151; /* gray-700 from Tailwind */
+      letter-spacing: 0.2em;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+  </style>
+
 </head>
   <body>
+    <div id="splash-screen">
+      <div class="splash-logo">ROBERTS</div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

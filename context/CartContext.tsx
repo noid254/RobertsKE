@@ -21,9 +21,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const localData = window.localStorage.getItem('roberts-cart');
-      return localData ? JSON.parse(localData) : [];
+      if (!localData) return [];
+      
+      const parsedData = JSON.parse(localData) as CartItem[];
+      // Validate data from localStorage to prevent crashes from corrupted/old data structures.
+      const validCart = parsedData.filter(item => 
+        item && item.selectedVariant && typeof item.selectedVariant.colorName === 'string'
+      );
+
+      if (validCart.length < parsedData.length) {
+        console.warn('Removed one or more invalid items from cart loaded from localStorage.');
+      }
+      
+      return validCart;
+
     } catch (error) {
       console.error("Could not parse cart from localStorage", error);
+      // If parsing fails, clear the corrupted cart data
+      window.localStorage.removeItem('roberts-cart');
       return [];
     }
   });
@@ -52,7 +67,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const newQuantity = updatedCart[existingItemIndex].quantity + quantity;
 
         if(newQuantity > availableStock) {
-            // FIX: Corrected typo from `existingItem-`a` to `existingItemIndex`
             alert(`Sorry, only ${availableStock} units are available. You already have ${updatedCart[existingItemIndex].quantity} in your cart.`);
             return prevCart;
         }

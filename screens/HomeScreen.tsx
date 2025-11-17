@@ -3,21 +3,22 @@ import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory, type HomeBanner, type BlogPost, User } from '../types';
 import { CloseIcon, HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
+import { type View } from '../App';
 
 interface HomeScreenProps {
   productsData: Product[];
   onProductClick: (product: Product) => void;
-  onNavigate: (view: any, payload?: any) => void;
-  onSearch: (query: string) => void;
+  onNavigate: (view: View) => void;
+  onToggleSearch: () => void;
   roomCategories: RoomCategory[];
   homeBanners: HomeBanner[];
   user: User | null;
   onEditRequest: (type: 'banner' | 'category', data: any, isNew?: boolean) => void;
 }
 
-const AdminEditButton: React.FC<{onClick: () => void, isPlus?: boolean, position?: string}> = ({ onClick, isPlus = false, position = 'top-2 right-2' }) => (
+const AdminEditIconButton: React.FC<{onClick: () => void, position?: string}> = ({ onClick, position = 'top-2 right-2' }) => (
     <button onClick={onClick} className={`absolute ${position} z-20 bg-white/80 text-gray-800 rounded-full p-2 shadow-md hover:bg-white transition-all`}>
-        {isPlus ? <PlusIcon className="w-5 h-5" /> : <EditIcon className="w-5 h-5" />}
+        <EditIcon className="w-5 h-5" />
     </button>
 );
 
@@ -59,14 +60,29 @@ interface InterleavedContent {
 // Sub-component for the new interleaved banner/blog
 const InterleavedContentCard: React.FC<{
   content: InterleavedContent;
-  onNavigate: (view: any, payload?: any) => void;
+  onNavigate: (view: View) => void;
   user: User | null;
   onEditRequest: (type: 'banner' | 'category', data: any) => void;
-}> = ({ content, onNavigate, user, onEditRequest }) => (
+}> = ({ content, onNavigate, user, onEditRequest }) => {
+
+    const handleNavigate = () => {
+      const { view, payload } = content.link;
+      let viewObj: View;
+      switch(view) {
+          case 'blogPost': viewObj = { name: 'blogPost', post: payload }; break;
+          case 'services': viewObj = { name: 'services' }; break;
+          case 'portfolio': viewObj = { name: 'portfolio' }; break;
+          case 'category': viewObj = { name: 'category', category: payload }; break;
+          default: viewObj = { name: 'home' };
+      }
+      onNavigate(viewObj);
+  };
+
+    return (
     <div 
         className="h-96 rounded-lg overflow-hidden relative group"
     >
-        <div className="cursor-pointer" onClick={() => onNavigate(content.link.view, content.link.payload)}>
+        <div className="cursor-pointer" onClick={handleNavigate}>
           <img src={content.imageUrl} alt={content.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
           <div className="absolute bottom-0 left-0 p-6 text-white">
@@ -78,13 +94,16 @@ const InterleavedContentCard: React.FC<{
           </div>
         </div>
         {user?.role === 'super-admin' && content.originalData && (
-          <AdminEditButton onClick={() => onEditRequest('banner', content.originalData)} />
+          <button onClick={() => onEditRequest('banner', content.originalData)} className="absolute top-2 right-2 z-20 bg-white/80 text-gray-800 rounded-full py-1 px-3 text-xs font-bold shadow-md hover:bg-white transition-all flex items-center gap-1">
+              <EditIcon className="w-4 h-4" /> Edit Banner
+          </button>
         )}
     </div>
-);
+  );
+};
 
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, onNavigate, onSearch, roomCategories, homeBanners, user, onEditRequest }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, onNavigate, onToggleSearch, roomCategories, homeBanners, user, onEditRequest }) => {
   const [scrollY, setScrollY] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -160,7 +179,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
       <Header 
         isSticky={isSticky} 
         onNavigate={onNavigate}
-        onSearch={onSearch}
+        onToggleSearch={onToggleSearch}
       />
 
       <main>
@@ -175,7 +194,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                   <h1 className="text-4xl lg:text-6xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{category.hero.title}</h1>
                   <p className="mt-2 text-lg max-w-lg mx-auto">{category.hero.subtitle}</p>
                   <button 
-                    onClick={() => onNavigate('category', category)}
+                    onClick={() => onNavigate({ name: 'category', category })}
                     className="mt-6 bg-white text-black font-semibold py-3 px-10 rounded-full hover:bg-opacity-90 transition-colors">
                     Shop {category.name}
                   </button>
@@ -183,7 +202,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
               </div>
             ))}
           </div>
-          {user?.role === 'super-admin' && roomCategories.length > 0 && <AdminEditButton onClick={() => onEditRequest('category', roomCategories[currentSlide])} />}
+          {user?.role === 'super-admin' && roomCategories.length > 0 && (
+            <button onClick={() => onEditRequest('category', roomCategories[currentSlide])} className="absolute top-4 right-4 z-30 bg-white/80 text-black text-sm font-semibold px-4 py-2 rounded-full shadow-lg hover:bg-white transition-all flex items-center gap-2">
+                <EditIcon className="w-4 h-4" /> Edit Hero
+            </button>
+          )}
           <button onClick={prevSlide} className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 p-2 bg-black/30 rounded-full hover:bg-black/50 transition-colors">
             <ChevronLeftIcon className="w-6 h-6 lg:w-8 lg:h-8" />
           </button>
@@ -232,7 +255,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                 <div className="flex justify-center items-center gap-4">
                     <h2 className="text-3xl lg:text-4xl text-center" style={{fontFamily: "'Playfair Display', serif"}}>Shop by Room</h2>
                     {user?.role === 'super-admin' && (
-                        <button onClick={() => onEditRequest('category', null, true)} className="bg-gray-800 text-white rounded-full p-2 shadow-md hover:bg-gray-700 transition-all -mt-1">
+                        <button onClick={() => onEditRequest('category', null, true)} title="Add New Category" className="bg-gray-800 text-white rounded-full p-2 shadow-md hover:bg-gray-700 transition-all -mt-1">
                             <PlusIcon className="w-5 h-5"/>
                         </button>
                     )}
@@ -246,7 +269,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                                 key={room.id}
                                 className="w-64 md:w-72 flex-shrink-0 aspect-square rounded-lg overflow-hidden relative group"
                             >
-                                <div className="cursor-pointer" onClick={() => onNavigate('category', room)}>
+                                <div className="cursor-pointer" onClick={() => onNavigate({ name: 'category', category: room })}>
                                     <img src={room.imageUrl} alt={room.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                                     <div className="absolute bottom-4 left-4 text-white">
@@ -254,7 +277,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                                         <p className="text-xs mt-1 max-w-[90%]">{room.description}</p>
                                     </div>
                                 </div>
-                                {user?.role === 'super-admin' && <AdminEditButton onClick={() => onEditRequest('category', room)} />}
+                                {user?.role === 'super-admin' && <AdminEditIconButton onClick={() => onEditRequest('category', room)} />}
                             </div>
                         ))}
                     </div>
@@ -277,7 +300,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
                     category={category}
                     products={categoryProducts}
                     onProductClick={onProductClick}
-                    onViewAllClick={() => onNavigate('category', category)}
+                    onViewAllClick={() => onNavigate({ name: 'category', category })}
                   />
                   
                   {index === 1 && <DecorCategoryScroller />}

@@ -61,7 +61,7 @@ const OrderDetailsScreen: React.FC<OrderDetailsScreenProps> = ({ order, onBack, 
                 {order.items.map(item => (
                     <div key={`${item.id}-${item.selectedVariant.colorName}`} className="flex">
                     <img 
-                        src={item.selectedVariant.images[0]} 
+                        src={item.selectedVariant?.images?.[0] || 'https://placehold.co/600x600.png/EFEFEF/333333?text=No+Image'} 
                         alt={item.name} 
                         className="w-20 h-20 object-cover rounded-md cursor-pointer"
                         onClick={() => onProductClick(item)}
