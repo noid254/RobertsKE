@@ -1,5 +1,3 @@
-
-
 import React, { useState, useContext, useEffect, lazy, Suspense } from 'react';
 import Footer from './components/Footer';
 import NewsletterModal from './components/NewsletterModal';
@@ -59,17 +57,14 @@ export type View =
   | { name: 'portfolio' }
   | { name: 'orderDetails'; order: Order };
 
-const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-
-
 const AppComponent: React.FC = () => {
     const [view, setView] = useState<View>({ name: 'home' });
+    const [history, setHistory] = useState<View[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [roomCategories, setRoomCategories] = useState<RoomCategory[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [showNewsletterModal, setShowNewsletterModal] = useState(false);
-    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const { user, isAuthenticated } = useContext(AuthContext);
 
@@ -79,216 +74,312 @@ const AppComponent: React.FC = () => {
             const splashScreen = document.getElementById('splash-screen');
             if (splashScreen) {
                 splashScreen.classList.add('hidden');
+                // Remove from DOM after transition
                 setTimeout(() => {
                     splashScreen.remove();
                 }, 500); 
             }
         };
 
-        const loadData = async () => {
+        // Hide splash screen after a short delay to show the app shell/skeleton
+        setTimeout(hideSplashScreen, 1500);
+
+        const loadCategories = async () => {
             try {
-                const [fetchedCategories, initialProducts] = await Promise.all([
-                    fetchCategories(),
-                    fetchProducts({ perPage: 20 })
-                ]);
-
+                const fetchedCategories = await fetchCategories();
                 setRoomCategories(fetchedCategories);
-                setProducts(initialProducts);
-                setIsDataLoaded(true);
-                hideSplashScreen();
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+                setError("Could not load page categories. Please check your connection.");
+            }
+        };
 
-                // Fetch remaining products in the background
+        const loadProducts = async () => {
+            try {
+                // Fetch initial batch for a quick first paint
+                const initialProducts = await fetchProducts({ perPage: 20 });
+                setProducts(initialProducts);
+                
+                // Then fetch the rest in the background
                 const remainingProducts = await fetchProducts({ perPage: 80, offset: 20 });
                 setProducts(prevProducts => {
                     const existingIds = new Set(prevProducts.map(p => p.id));
                     const newProducts = remainingProducts.filter(p => !existingIds.has(p.id));
                     return [...prevProducts, ...newProducts];
                 });
-
+                setError(null);
             } catch (err) {
-                console.error("Failed to load initial data:", err);
-                setError("Could not load page content. Please check your connection.");
-                hideSplashScreen();
+                console.warn("Failed to load products:", err);
+                // Setting an error for products might be too disruptive if categories loaded.
+                // A small warning or silent fail might be better. For now, we'll just log it.
             }
         };
         
-        loadData();
+        loadCategories();
+        loadProducts();
 
     }, []);
-
-    // Hash-based routing
-    useEffect(() => {
-        if (!isDataLoaded) return;
-
-        const parseHash = () => {
-            const hash = window.location.hash.replace(/^#\/?/, '');
-            if (!hash) {
-                setView({ name: 'home' });
-                return;
-            }
-
-            const [path, param] = hash.split('/');
-
-            switch (path) {
-                case 'product':
-                    const product = products.find(p => p.id === parseInt(param));
-                    if (product) setView({ name: 'productDetail', product });
-                    else setView({ name: 'home' }); // Fallback
-                    break;
-                case 'category':
-                    const category = roomCategories.find(c => slugify(c.name) === param);
-                    if (category) setView({ name: 'category', category });
-                    else setView({ name: 'shop' });
-                    break;
-                case 'blog':
-                    const post = BLOG_POSTS.find(p => p.id === parseInt(param));
-                    if (post) setView({ name: 'blogPost', post });
-                    else setView({ name: 'blog' });
-                    break;
-                case 'creator':
-                    const creator = USERS.find(u => u.phone === param);
-                    if (creator) setView({ name: 'creatorProfile', creator });
-                    else setView({ name: 'home' });
-                    break;
-                case 'order':
-                    const order = ORDERS.find(o => o.id === `#${param}`);
-                    if (order) setView({ name: 'orderDetails', order });
-                    else setView({ name: 'account' });
-                    break;
-                case 'cart': setView({ name: 'cart' }); break;
-                case 'shop': setView({ name: 'shop' }); break;
-                case 'black-friday': setView({ name: 'blackFriday' }); break;
-                case 'pre-order': setView({ name: 'preOrder' }); break;
-                case 'checkout': setView({ name: 'checkout' }); break;
-                case 'account': setView({ name: 'account' }); break;
-                case 'saved-items': setView({ name: 'savedItems' }); break;
-                case 'dashboard': setView({ name: 'dashboard' }); break;
-                case 'inspiration': setView({ name: 'blog' }); break;
-                case 'services': setView({ name: 'services' }); break;
-                case 'portfolio': setView({ name: 'portfolio' }); break;
-                case 'signin': setView({ name: 'signIn' }); break;
-                case 'signup': setView({ name: 'signUp' }); break;
-                default: setView({ name: 'home' });
-            }
-            window.scrollTo(0, 0);
-        };
-
-        parseHash(); // Initial parse on data load
-        window.addEventListener('hashchange', parseHash);
-        return () => window.removeEventListener('hashchange', parseHash);
-
-    }, [isDataLoaded, products, roomCategories]);
-
-
-    const handleNavigation = (newView: View) => {
-        let hash = '';
-        switch (newView.name) {
-            case 'productDetail': hash = `/product/${newView.product.id}`; break;
-            case 'category': hash = `/category/${slugify(newView.category.name)}`; break;
-            case 'blogPost': hash = `/blog/${newView.post.id}`; break;
-            case 'creatorProfile': hash = `/creator/${newView.creator.phone}`; break;
-            case 'orderDetails': hash = `/order/${newView.order.id.replace('#', '')}`; break;
-            case 'home': hash = '/'; break;
-            case 'cart': hash = '/cart'; break;
-            case 'shop': hash = '/shop'; break;
-            case 'blackFriday': hash = '/black-friday'; break;
-            case 'preOrder': hash = '/pre-order'; break;
-            case 'checkout': hash = '/checkout'; break;
-            case 'account': hash = '/account'; break;
-            case 'savedItems': hash = '/saved-items'; break;
-            case 'dashboard': hash = '/dashboard'; break;
-            case 'blog': hash = '/inspiration'; break;
-            case 'services': hash = '/services'; break;
-            case 'portfolio': hash = '/portfolio'; break;
-            case 'signIn': hash = '/signin'; break;
-            case 'signUp': hash = '/signup'; break;
-            default: hash = '/';
-        }
-        window.location.hash = hash;
-    };
-
-    const handleBack = () => {
-        window.history.back();
-    };
-
-    const handleAddNewProduct = (data: { title: string, description: string }) => {
-        console.log("New Product Submitted for Review:", data);
-        // Here you would typically send this to a backend for approval
-    };
-
-    const handleAddNewPost = (data: Omit<BlogPost, 'id' | 'author' | 'date' | 'status'>) => {
-        console.log("New Blog Post Submitted for Review:", data);
-    };
-
-    const handleEditRequest = (type: 'banner' | 'category', data: any, isNew?: boolean) => {
-        console.log(`Editing ${type}:`, data, `Is new: ${isNew}`);
-        // In a real app, this would open an admin editing modal/form
-        alert(`Admin action: ${isNew ? 'Add' : 'Edit'} ${type}. See console for details.`);
-    };
     
-    // Show newsletter modal after 15 seconds, only once per session
+    // Newsletter modal logic
     useEffect(() => {
         const timer = setTimeout(() => {
-            const hasSeenModal = sessionStorage.getItem('hasSeenNewsletterModal');
+            const hasSeenModal = sessionStorage.getItem('roberts-newsletter-seen');
             if (!hasSeenModal) {
                 setShowNewsletterModal(true);
-                sessionStorage.setItem('hasSeenNewsletterModal', 'true');
             }
-        }, 15000);
+        }, 15000); // Show after 15 seconds
+
         return () => clearTimeout(timer);
     }, []);
 
-    const renderContent = () => {
-        if (!isDataLoaded && view.name === 'home') {
-            return <HomeScreenSkeleton />;
-        }
-        if (error) {
-            return <div className="text-center p-8 text-red-600">{error}</div>;
-        }
+    const handleCloseNewsletter = () => {
+        sessionStorage.setItem('roberts-newsletter-seen', 'true');
+        setShowNewsletterModal(false);
+    };
+    
+    const handleSubscribeNewsletter = (phone: string) => {
+        console.log(`Subscribed with phone: ${phone}`);
+        // In a real app, you'd send this to a server.
+    };
 
-        switch (view.name) {
-            case 'home': return <HomeScreen productsData={products} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} roomCategories={roomCategories} homeBanners={HOME_BANNERS} user={user} onEditRequest={handleEditRequest} />;
-            case 'productDetail': return <ProductDetailScreen product={view.product} onBack={handleBack} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} allProducts={products} onProductClick={product => handleNavigation({ name: 'productDetail', product })} />;
-            case 'cart': return <CartScreen onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onCheckout={() => handleNavigation({ name: 'checkout' })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} />;
-            case 'blackFriday': return <BlackFridayScreen onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} deals={products.filter(p => p.sale)} />;
-            case 'preOrder': return <PreOrderScreen onBack={handleBack} allProducts={products} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} roomCategories={roomCategories} />;
-            case 'searchResults': return <SearchResultsScreen onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} searchState={view.searchState} />;
-            case 'checkout': return <CheckoutScreen onBack={handleBack} onHomeClick={() => handleNavigation({ name: 'home' })} />;
-            case 'account': return isAuthenticated ? <AccountScreen onBack={handleBack} onNavigate={handleNavigation} orders={ORDERS} /> : <SignInScreen onSignUpClick={() => handleNavigation({ name: 'signUp' })} onSignInSuccess={() => handleNavigation({ name: 'home' })} />;
-            case 'savedItems': return <SavedItemsScreen onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} />;
-            case 'dashboard': return <DashboardScreen onBack={handleBack} allProducts={products} onAddNewProduct={handleAddNewProduct} onAddNewPost={handleAddNewPost} />;
-            case 'category': return <CategoryScreen category={view.category} allProducts={products} onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} user={user} onEditRequest={handleEditRequest} roomCategories={roomCategories} />;
-            case 'shop': return <ShopScreen allProducts={products} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} roomCategories={roomCategories} />;
-            case 'blog': return <BlogScreen posts={BLOG_POSTS} onBack={handleBack} onPostClick={post => handleNavigation({ name: 'blogPost', post })} user={user} onAddNewPost={handleAddNewPost} />;
-            case 'blogPost': return <BlogPostScreen post={view.post} onBack={handleBack} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} />;
-            case 'services': return <ServicesScreen onBack={handleBack} services={DESIGN_SERVICES} />;
-            case 'signIn': return <SignInScreen onSignUpClick={() => handleNavigation({ name: 'signUp' })} onSignInSuccess={() => handleNavigation({ name: 'home' })} />;
-            case 'signUp': return <SignUpScreen onSignInClick={() => handleNavigation({ name: 'signIn' })} onSignUpSuccess={() => handleNavigation({ name: 'home' })} />;
-            case 'creatorProfile': return <CreatorProfileScreen creator={view.creator} onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} allProducts={products} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} />;
-            case 'portfolio': return <PortfolioScreen onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} />;
-            case 'orderDetails': return <OrderDetailsScreen order={view.order} onBack={handleBack} onProductClick={product => handleNavigation({ name: 'productDetail', product })} />;
-            default: return <HomeScreen productsData={products} onProductClick={product => handleNavigation({ name: 'productDetail', product })} onNavigate={handleNavigation} onToggleSearch={() => setIsSearchOpen(true)} roomCategories={roomCategories} homeBanners={HOME_BANNERS} user={user} onEditRequest={handleEditRequest} />;
+    const handleNavigate = (newView: View, fromHistory = false) => {
+        if (!fromHistory) {
+            setHistory(prev => [...prev, view]);
+        }
+        setView(newView);
+        window.scrollTo(0, 0); // Scroll to top on navigation
+        setIsSearchOpen(false);
+    };
+
+    const handleBack = () => {
+        if (history.length > 0) {
+            const lastView = history[history.length - 1];
+            setHistory(prev => prev.slice(0, -1));
+            handleNavigate(lastView, true);
+        } else {
+            handleNavigate({ name: 'home' });
         }
     };
     
+    const handleAddNewProduct = (data: { title: string, description: string }) => {
+        const newProduct: Product = {
+            id: products.length + 1000, // Temporary ID
+            name: data.title,
+            description: data.description,
+            category: 'Uncategorized',
+            subCategory: 'Uncategorized',
+            price: 0,
+            rating: 0,
+            reviewCount: 0,
+            variants: [{ color: '#ccc', colorName: 'Default', images: [], stock: 0 }],
+            status: 'pending',
+            creatorId: user?.phone || '',
+            creatorName: user?.name || 'Unknown Staff',
+            dateAdded: new Date().toISOString(),
+            salesCount: 0,
+            reviews: [],
+        };
+        setProducts(prev => [...prev, newProduct]);
+        alert('Product submitted for review!');
+    };
+    
+    const handleAddNewPost = (postData: Omit<BlogPost, 'id' | 'author' | 'date' | 'status'>) => {
+        const newPost: BlogPost = {
+            ...postData,
+            id: BLOG_POSTS.length + 1,
+            author: user?.name || 'Unknown Staff',
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            status: 'pending',
+        };
+        // In a real app, this would be an API call. Here we just log it.
+        console.log("New post submitted for review:", newPost);
+        alert('Blog post submitted for review!');
+    };
+
+    const renderView = () => {
+        if (error) {
+             return (
+                <div className="flex flex-col items-center justify-center min-h-screen text-center p-4">
+                    <h1 className="text-2xl font-bold text-red-600">Something went wrong</h1>
+                    <p className="text-gray-600 mt-2">{error}</p>
+                </div>
+            );
+        }
+
+        switch (view.name) {
+            case 'home':
+                return <HomeScreen
+                    productsData={products}
+                    roomCategories={roomCategories}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                    homeBanners={HOME_BANNERS}
+                    user={user}
+                    onEditRequest={(type, data) => console.log('Edit requested', type, data)}
+                />;
+            case 'productDetail':
+                return <ProductDetailScreen
+                    product={view.product}
+                    allProducts={products}
+                    onBack={handleBack}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                />;
+            case 'cart':
+                return <CartScreen 
+                    onBack={handleBack} 
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onCheckout={() => handleNavigate({ name: 'checkout' })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />;
+            case 'blackFriday':
+                const deals = products.filter(p => p.sale).slice(0, 12);
+                return <BlackFridayScreen 
+                    deals={deals}
+                    onBack={handleBack}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />
+            case 'preOrder':
+                return <PreOrderScreen
+                    allProducts={products}
+                    roomCategories={roomCategories}
+                    onBack={handleBack}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />
+            case 'preOrderCategory':
+                 return <CategoryLandingPage 
+                    category={{...view.category, products}}
+                    onBack={handleBack}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />
+            case 'searchResults':
+                 return <SearchResultsScreen 
+                    searchState={view.searchState}
+                    onBack={handleBack}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />
+            case 'checkout':
+                return <CheckoutScreen onBack={handleBack} onHomeClick={() => handleNavigate({ name: 'home' })} />;
+            case 'account':
+                if (!isAuthenticated) {
+                    handleNavigate({ name: 'signIn' });
+                    return null;
+                }
+                return <AccountScreen onBack={handleBack} onNavigate={handleNavigate} orders={ORDERS} />;
+            case 'savedItems':
+                return <SavedItemsScreen onBack={handleBack} onProductClick={(p) => handleNavigate({ name: 'productDetail', product: p })} />;
+            case 'dashboard':
+                 if (!user || (user.role !== 'staff' && user.role !== 'super-admin')) {
+                     handleNavigate({ name: 'home' });
+                     return null;
+                 }
+                return <DashboardScreen 
+                    onBack={handleBack}
+                    allProducts={products}
+                    onAddNewProduct={handleAddNewProduct}
+                    onAddNewPost={handleAddNewPost}
+                />;
+            case 'category':
+                return <CategoryScreen 
+                    category={view.category}
+                    allProducts={products}
+                    onBack={handleBack}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                    user={user}
+                    onEditRequest={(type, data) => console.log('Edit requested', type, data)}
+                    roomCategories={roomCategories}
+                />;
+            case 'shop':
+                return <ShopScreen
+                    allProducts={products}
+                    roomCategories={roomCategories}
+                    onProductClick={(product) => handleNavigate({ name: 'productDetail', product })}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />;
+            case 'blog':
+                return <BlogScreen 
+                    posts={[...BLOG_POSTS].reverse()} 
+                    onBack={handleBack} 
+                    onPostClick={(post) => handleNavigate({ name: 'blogPost', post })}
+                    user={user}
+                    onAddNewPost={handleAddNewPost}
+                />;
+            case 'blogPost':
+                return <BlogPostScreen post={view.post} onBack={handleBack} onNavigate={handleNavigate} onToggleSearch={() => setIsSearchOpen(true)} />;
+            case 'services':
+                return <ServicesScreen services={DESIGN_SERVICES} onBack={handleBack} onNavigate={handleNavigate} onToggleSearch={() => setIsSearchOpen(true)} />;
+             case 'portfolio':
+                return <PortfolioScreen onBack={handleBack} onProductClick={(p) => handleNavigate({ name: 'productDetail', product: p})} />;
+             case 'orderDetails':
+                return <OrderDetailsScreen order={view.order} onBack={handleBack} onProductClick={(p) => handleNavigate({ name: 'productDetail', product: p})} />;
+            case 'signIn':
+                return <SignInScreen onSignUpClick={() => handleNavigate({ name: 'signUp'})} onSignInSuccess={() => handleNavigate({ name: 'home' })} />;
+            case 'signUp':
+                return <SignUpScreen onSignInClick={() => handleNavigate({ name: 'signIn'})} onSignUpSuccess={() => handleNavigate({ name: 'home' })} />;
+             case 'creatorProfile':
+                return <CreatorProfileScreen 
+                    creator={view.creator}
+                    onBack={handleBack}
+                    onProductClick={(p) => handleNavigate({ name: 'productDetail', product: p})}
+                    allProducts={products}
+                    onNavigate={handleNavigate}
+                    onToggleSearch={() => setIsSearchOpen(true)}
+                />;
+            default:
+                return <div>404 - Page Not Found</div>;
+        }
+    };
+
     return (
-        <Suspense fallback={<HomeScreenSkeleton />}>
-            {renderContent()}
-            <Footer onNavigate={handleNavigation} />
-            {showNewsletterModal && <NewsletterModal onClose={() => setShowNewsletterModal(false)} onSubscribe={(phone) => console.log(`Subscribed with: ${phone}`)} />}
-            <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} onNavigate={handleNavigation} products={products} categories={roomCategories} blogPosts={BLOG_POSTS} />
-        </Suspense>
+        <div className="App">
+            <SearchOverlay 
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                onNavigate={handleNavigate}
+                products={products}
+                categories={roomCategories}
+                blogPosts={BLOG_POSTS}
+            />
+            {showNewsletterModal && (
+                 <NewsletterModal
+                    onClose={handleCloseNewsletter}
+                    onSubscribe={handleSubscribeNewsletter}
+                />
+            )}
+            
+            <Suspense fallback={<HomeScreenSkeleton />}>
+                <div className="animate-fade-in">
+                    {renderView()}
+                </div>
+            </Suspense>
+
+            {['home'].includes(view.name) && <Footer onNavigate={handleNavigate} />}
+        </div>
     );
-}
+};
 
 const App: React.FC = () => (
-  <AuthProvider>
-    <CartProvider>
-      <SavedItemsProvider>
-        <AppComponent />
-      </SavedItemsProvider>
-    </CartProvider>
-  </AuthProvider>
+    <AuthProvider>
+        <CartProvider>
+            <SavedItemsProvider>
+                <AppComponent />
+            </SavedItemsProvider>
+        </CartProvider>
+    </AuthProvider>
 );
 
 export default App;

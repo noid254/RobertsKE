@@ -1,11 +1,9 @@
-
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory, type HomeBanner, type BlogPost, User } from '../types';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
-import { HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
+import { CloseIcon, HOME_BANNERS, BLOG_POSTS, ChevronLeftIcon, ChevronRightIcon, DECOR_CATEGORIES, EditIcon, PlusIcon } from '../constants';
 import { type View } from '../App';
 
 interface HomeScreenProps {
@@ -193,14 +191,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ productsData, onProductClick, o
 
       <main>
         {/* Hero Carousel Section */}
-        <section className="relative w-full h-[60vh] lg:h-[80vh] bg-gray-200">
+        <section className="relative w-full h-[60vh] lg:h-[80vh] bg-gray-300">
           {roomCategories.length === 0 ? (
-            <div className="w-full h-full animate-pulse">
-                <div className="absolute inset-0 z-20 h-full flex flex-col justify-center items-center text-center p-4 space-y-4">
-                    <div className="h-12 lg:h-16 w-3/5 bg-gray-300 rounded-md"></div>
-                    <div className="h-5 w-4/5 max-w-lg bg-gray-300 rounded-md"></div>
-                    <div className="!mt-8 h-12 w-40 bg-gray-300 rounded-full"></div>
-                </div>
+            <div className="w-full h-full animate-pulse flex justify-center items-center">
+                <div className="font-serif text-2xl text-gray-500">ROBERTS</div>
             </div>
           ) : (
             <div className="relative w-full h-full overflow-hidden text-white group">

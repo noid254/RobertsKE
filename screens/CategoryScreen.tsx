@@ -1,9 +1,8 @@
-
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
 import { type Product, type RoomCategory, User } from '../types';
-import { EditIcon } from '../constants';
+import { CloseIcon, EditIcon } from '../constants';
 import { type View } from '../App';
 
 interface CategoryScreenProps {
