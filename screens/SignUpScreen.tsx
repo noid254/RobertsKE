@@ -1,13 +1,16 @@
+
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { type User } from '../types';
+import { ChevronLeftIcon } from '../constants';
 
 interface SignUpScreenProps {
   onSignInClick: () => void;
   onSignUpSuccess: () => void;
+  onBack: () => void;
 }
 
-const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignInClick, onSignUpSuccess }) => {
+const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignInClick, onSignUpSuccess, onBack }) => {
   const [step, setStep] = useState(1); // 1 for details, 2 for OTP
   const [details, setDetails] = useState<Omit<User, 'role' | 'bio' | 'avatarUrl'>>({
       name: '',
@@ -54,6 +57,11 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignInClick, onSignUpSucc
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 bg-[#F9F5F0]">
+      <div className="absolute top-4 left-4 z-20">
+             <button onClick={onBack} className="bg-white/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-white">
+                 <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
+             </button>
+        </div>
       <div className="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto-format=fit=crop" alt="Interior design" className="w-full h-full object-cover opacity-20"/>
         </div>

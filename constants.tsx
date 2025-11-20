@@ -1,11 +1,39 @@
+
 import React from 'react';
-import { type Product, type PreOrderCategory, type BlogPost, type DesignService, type RoomCategory, type HomeBanner, type User, type Review, type PortfolioItem, type Order, type DecorCategory } from './types';
+import { type Product, type PreOrderCategory, type BlogPost, type DesignService, type RoomCategory, type HomeBanner, type User, type Review, type PortfolioItem, type Order, type DecorCategory, type FlashSale, type HeroSlide } from './types';
 
 export const USERS: User[] = [
-    { phone: '+254723119356', name: 'Super Admin', email: 'admin@roberts.com', address: '1 Admin Way, Westlands, Nairobi', role: 'super-admin', bio: 'Overseeing operations at Roberts Indoor Solutions in Kenya.', avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1888&auto=format&fit=crop' },
+    { phone: '0723119356', name: 'Super Admin', email: 'admin@roberts.com', address: '1 Admin Way, Westlands, Nairobi', role: 'super-admin', bio: 'Overseeing operations at Roberts Indoor Solutions in Kenya.', avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1888&auto=format&fit=crop' },
     { phone: '+15551234567', name: 'Asha Njeri', email: 'asha.njeri@example.com', address: '123 Lavington Green, Nairobi', role: 'customer', bio: 'Lover of all things minimalist and sustainable.', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887&auto=format&fit=crop' },
     { phone: '+15557654321', name: 'David Mwangi', email: 'david.mwangi@example.com', address: '456 Kilimani Rd, Nairobi', role: 'staff', bio: 'Curator of modern and mid-century furniture. Believes good design should be accessible to everyone in Kenya.', avatarUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1887&auto=format&fit=crop' },
     { phone: '+15551112222', name: 'Fatima Yusuf', email: 'fatima.yufuf@example.com', address: '789 Karen Connection, Nairobi', role: 'staff', bio: 'Specializing in bohemian and natural-textured decor. Bringing warmth and personality to every space.', avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop' },
+];
+
+export const HERO_SLIDES: HeroSlide[] = [
+    {
+        id: 'hero-1',
+        title: 'Elevate Your Living Space',
+        subtitle: 'Discover our new collection of handcrafted furniture designed for modern Kenyan homes.',
+        imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop',
+        buttonText: 'Shop Living Room',
+        linkCategory: 'Living Room'
+    },
+    {
+        id: 'hero-2',
+        title: 'Dining in Style',
+        subtitle: 'Create the perfect setting for family gatherings and dinner parties.',
+        imageUrl: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?q=80&w=1770&auto=format&fit=crop',
+        buttonText: 'Shop Dining',
+        linkCategory: 'Dining'
+    },
+    {
+        id: 'hero-3',
+        title: 'The Art of Lighting',
+        subtitle: 'Illuminate your home with our exclusive range of modern fixtures.',
+        imageUrl: 'https://images.unsplash.com/photo-1513506003011-3b03c80165bd?q=80&w=1887&auto=format&fit=crop',
+        buttonText: 'Shop Lighting',
+        linkCategory: 'Lighting'
+    }
 ];
 
 export const PRE_ORDER_BANNER = {
@@ -15,6 +43,10 @@ export const PRE_ORDER_BANNER = {
     link: "smart-home"
 };
 
+// NOTE: Initial state is empty. The app's logic now auto-generates repeating daily deals 
+// based on the '12 Deals a Day' logic unless specifically overridden by admin input.
+export const FLASH_SALES: FlashSale[] = [];
+
 // NOTE: The products for orders are based on old static data and may not appear
 // if their IDs don't match products fetched from your WooCommerce store.
 const sampleProduct1: Product = { id: 1, name: 'Plush Velvet Modular Sofa', category: 'Living Room', subCategory: 'Sofas', price: 149900, rating: 4.8, reviewCount: 280, reviews: [], description: '', status: 'published', creatorId: '1', creatorName: 'Admin', dateAdded: '', salesCount: 0, variants: [{ color: '#000080', colorName: 'Navy Blue', images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1770&auto=format&fit=crop'], stock: 8 }] };
@@ -23,7 +55,7 @@ const sampleProduct5: Product = { id: 5, name: 'Handwoven Textured Pillow', cate
 
 
 export const HOME_BANNERS: HomeBanner[] = [
-    { id: 1, title: 'Expert After-Sale Services in Nairobi', subtitle: 'From measurements to fitting, our Kenyan team is here to help complete your home.', imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1770&auto=format&fit=crop', buttonText: 'Explore Services', link: { view: 'services' }, layout: 'split' },
+    { id: 1, title: 'Expert After-Sale Services in Nairobi', subtitle: 'From measurements to fitting, our Kenyan team is here to help complete your home.', imageUrl: 'https://cms.roberts.co.ke/wp-content/uploads/2025/11/4343.jpg', buttonText: 'Explore Services', link: { view: 'services' }, layout: 'split' },
     { id: 2, title: 'Our Completed Projects', subtitle: 'See how we have transformed homes across Nairobi and get inspired for your own space.', imageUrl: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1770&auto=format&fit=crop', buttonText: 'View Our Work', link: { view: 'portfolio' }, layout: 'full' },
 ];
 

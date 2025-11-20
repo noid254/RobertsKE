@@ -1,8 +1,8 @@
+
 import React, { useContext } from 'react';
 import { ChevronLeftIcon } from '../constants';
 import { AuthContext } from '../context/AuthContext';
-import { type Order } from '../types';
-import { type View } from '../App';
+import { type Order, type View } from '../types';
 
 interface AccountScreenProps {
   onBack: () => void;

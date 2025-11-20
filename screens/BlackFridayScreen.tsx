@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product } from '../types';
-import { type View } from '../App';
+import { type Product, type View } from '../types';
 
 interface BlackFridayScreenProps {
   onBack: () => void;

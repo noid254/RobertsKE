@@ -1,6 +1,7 @@
+
 import React from 'react';
 import Header from '../components/Header';
-import { type View } from '../App';
+import { type View } from '../types';
 import { DESIGN_SERVICES } from '../constants';
 
 interface AfterSaleServicesScreenProps {
@@ -40,7 +41,7 @@ const AfterSaleServicesScreen: React.FC<AfterSaleServicesScreenProps> = ({ onBac
                     <h2 className="text-3xl lg:text-4xl font-bold text-gray-800" style={{fontFamily: "'Playfair Display', serif"}}>We take measurements, deliver, and fit.</h2>
                     <p className="text-gray-600 mt-4 text-base">Our commitment to you doesn't end at the checkout. We offer a complete service to ensure your new pieces fit perfectly into your Kenyan home.</p>
                 </div>
-                <img src="https://images.unsplash.com/photo-1593085512500-213c3a44a7a8?q=80&w=1887&auto-format=fit=crop" alt="Measuring a space" className="w-full h-56 object-cover"/>
+                <img src="https://cms.roberts.co.ke/wp-content/uploads/2025/11/4343.jpg" alt="Measuring a space" className="w-full h-56 object-cover"/>
             </div>
 
             <div className="bg-white p-6 lg:p-8 rounded-lg shadow-sm">

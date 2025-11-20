@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Product, RoomCategory, BlogPost } from '../types';
+import { Product, RoomCategory, BlogPost, View } from '../types';
 import { SearchIcon, CloseIcon } from '../constants';
-import { type View } from '../App';
 
 interface SearchOverlayProps {
     isOpen: boolean;

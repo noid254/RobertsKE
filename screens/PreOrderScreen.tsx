@@ -1,8 +1,8 @@
+
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product, type RoomCategory } from '../types';
-import { type View } from '../App';
+import { type Product, type RoomCategory, type View } from '../types';
 
 interface PreOrderScreenProps {
   onBack: () => void;

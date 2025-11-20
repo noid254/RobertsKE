@@ -1,14 +1,14 @@
+
 import React, { useState, useContext } from 'react';
 import Header from '../components/Header';
 import StarRating from '../components/StarRating';
 import ProductCard from '../components/ProductCard';
-import { type Product, type ProductVariant } from '../types';
+import { type Product, type ProductVariant, type View } from '../types';
 import { HeartIcon, WhatsAppIcon } from '../constants';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useSavedItems } from '../context/SavedItemsContext';
 import { USERS } from '../constants';
-import { type View } from '../App';
 
 interface ProductDetailScreenProps {
   product: Product;
@@ -80,6 +80,11 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
       addSavedItem(product);
     }
   };
+
+  const handleAddToCart = () => {
+      addToCart({ product: { ...product }, selectedVariant, quantity: 1});
+      onNavigate({ name: 'upsell', originalProduct: product });
+  }
 
   const getPrice = () => {
     let currentPrice = product.price;
@@ -173,7 +178,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
                         <div className="hidden lg:block">
                             <button 
                                 className="w-full py-3 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                                onClick={() => addToCart({ product: { ...product }, selectedVariant, quantity: 1})}
+                                onClick={handleAddToCart}
                                 disabled={stockStatus <= 0}
                             >
                                 {stockStatus > 0 ? 'Add to Cart' : 'Out of Stock'}
@@ -235,7 +240,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
         <div className="container mx-auto px-4 sm:px-6">
             <button 
                 className="w-full py-3 border border-gray-800 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-                onClick={() => addToCart({ product: { ...product }, selectedVariant, quantity: 1})}
+                onClick={handleAddToCart}
                 disabled={stockStatus <= 0}
                 >
                 {stockStatus > 0 ? 'Add to cart' : 'Out of Stock'}

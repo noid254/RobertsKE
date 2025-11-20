@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -51,7 +52,7 @@
       "@type": "Organization",
       "name": "Roberts Indoor Solutions",
       "url": "https://www.robertsindoorsolutions.co.ke/",
-      "logo": "https://www.robertsindoorsolutions.co.ke/icons/icon-512x512.png",
+      "logo": "https://cms.roberts.co.ke/wp-content/uploads/2025/07/11-1.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+254723119356",
@@ -110,24 +111,22 @@
       opacity: 0;
       pointer-events: none;
     }
-    .splash-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 500;
-      color: #374151; /* gray-700 from Tailwind */
-      letter-spacing: 0.2em;
+    .splash-logo-img {
+      height: 100px;
+      width: auto;
+      object-fit: contain;
       animation: pulse 2s infinite ease-in-out;
     }
     @keyframes pulse {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; }
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
     }
   </style>
 
 </head>
   <body>
     <div id="splash-screen">
-      <div class="splash-logo">ROBERTS</div>
+      <img src="https://cms.roberts.co.ke/wp-content/uploads/2025/07/11-1.png" alt="Roberts Indoor Solutions" class="splash-logo-img" />
     </div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

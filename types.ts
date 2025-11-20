@@ -1,3 +1,4 @@
+
 export interface Review {
   id: number;
   author: string;
@@ -125,6 +126,7 @@ export interface DecorCategory {
   imageUrl: string;
 }
 
+// For the interleaved promotional banners
 export interface HomeBanner {
     id: number;
     title: string;
@@ -136,6 +138,25 @@ export interface HomeBanner {
         payload?: any;
     };
     layout: 'full' | 'split';
+}
+
+// For the top carousel (Hero Section)
+export interface HeroSlide {
+    id: string;
+    title: string;
+    subtitle: string;
+    imageUrl: string;
+    buttonText: string;
+    linkCategory?: string; // Optional: link to a category name
+}
+
+export interface FlashSale {
+    id: string;
+    productId: number;
+    startTime: string; // ISO String
+    endTime: string; // ISO String
+    discount: number; // 0.5 for 50%
+    isActive: boolean;
 }
 
 export interface User {
@@ -151,8 +172,48 @@ export interface User {
 export interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
-    login: (phone: string, otp: string) => boolean;
+    login: (phone: string, otp: string) => Promise<boolean>;
     logout: () => void;
-    signup: (details: Omit<User, 'role' | 'bio' | 'avatarUrl'>) => boolean;
+    signup: (details: Omit<User, 'role' | 'bio' | 'avatarUrl'>) => Promise<boolean>;
     updateUserRole: (phone: string, role: User['role']) => void;
+    requestOtp: (phone: string) => Promise<boolean>;
 }
+
+// M-Pesa related types
+export interface MpesaPaymentRequest {
+  phone: string;
+  amount: number;
+  accountReference: string;
+}
+
+export interface MpesaPaymentResponse {
+  MerchantRequestID: string;
+  CheckoutRequestID: string;
+  ResponseCode: string;
+  ResponseDescription: string;
+  CustomerMessage: string;
+}
+
+export type View =
+  | { name: 'home' }
+  | { name: 'productDetail'; product: Product }
+  | { name: 'cart' }
+  | { name: 'blackFriday' }
+  | { name: 'preOrder' }
+  | { name: 'preOrderCategory'; category: PreOrderCategory }
+  | { name: 'searchResults'; searchState: SearchState }
+  | { name: 'checkout' }
+  | { name: 'account' }
+  | { name: 'savedItems' }
+  | { name: 'dashboard' }
+  | { name: 'category'; category: RoomCategory }
+  | { name: 'shop' }
+  | { name: 'blog' }
+  | { name: 'blogPost'; post: BlogPost }
+  | { name: 'services' }
+  | { name: 'signIn' }
+  | { name: 'signUp' }
+  | { name: 'creatorProfile'; creator: User }
+  | { name: 'portfolio' }
+  | { name: 'orderDetails'; order: Order }
+  | { name: 'upsell'; originalProduct: Product };

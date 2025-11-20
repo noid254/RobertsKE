@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { type View } from '../App';
+import { type View } from '../types';
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
     <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">

@@ -1,39 +1,72 @@
+
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { ChevronLeftIcon } from '../constants';
 
 interface SignInScreenProps {
   onSignUpClick: () => void;
   onSignInSuccess: () => void;
+  onBack: () => void;
 }
 
-const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSuccess }) => {
+const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSuccess, onBack }) => {
   const [step, setStep] = useState(1); // 1 for phone, 2 for OTP
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login, requestOtp } = useContext(AuthContext);
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.trim()) {
       setError('');
-      setStep(2);
+      setIsLoading(true);
+      
+      try {
+          // Simulate API call to request OTP
+          const success = await requestOtp(phone);
+          if (success) {
+              setStep(2);
+          } else {
+              setError('Failed to send OTP. Please try again.');
+          }
+      } catch (e) {
+          setError('Network error. Please try again.');
+      } finally {
+          setIsLoading(false);
+      }
     } else {
       setError('Please enter a valid phone number.');
     }
   };
   
-  const handleOtpSubmit = (e: React.FormEvent) => {
+  const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(phone, otp)) {
-        onSignInSuccess();
-    } else {
-        setError('Invalid phone number or OTP.');
+    setIsLoading(true);
+    
+    try {
+        const success = await login(phone, otp);
+        if (success) {
+            onSignInSuccess();
+        } else {
+            setError('Invalid phone number or OTP.');
+        }
+    } catch (e) {
+        setError('Authentication failed. Please try again.');
+    } finally {
+        setIsLoading(false);
     }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 bg-[#F9F5F0]">
+        <div className="absolute top-4 left-4 z-20">
+             <button onClick={onBack} className="bg-white/80 backdrop-blur p-2 rounded-full shadow-sm hover:bg-white">
+                 <ChevronLeftIcon className="w-6 h-6 text-gray-800" />
+             </button>
+        </div>
         <div className="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1556742044-53342c8a7536?q=80&w=1887&auto-format&fit=crop" alt="Interior design" className="w-full h-full object-cover opacity-20"/>
         </div>
@@ -58,8 +91,12 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSucc
                             className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-gray-800 text-white py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors">
-                        Continue
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className={`w-full text-white py-3 rounded-md font-semibold transition-colors ${isLoading ? 'bg-gray-500 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700'}`}
+                    >
+                        {isLoading ? 'Sending OTP...' : 'Continue'}
                     </button>
                 </form>
             )}
@@ -78,8 +115,12 @@ const SignInScreen: React.FC<SignInScreenProps> = ({ onSignUpClick, onSignInSucc
                             className="w-full mt-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 text-center tracking-[1em]"
                         />
                     </div>
-                    <button type="submit" className="w-full bg-gray-800 text-white py-3 rounded-md font-semibold hover:bg-gray-700 transition-colors">
-                        Sign In
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className={`w-full text-white py-3 rounded-md font-semibold transition-colors ${isLoading ? 'bg-gray-500 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700'}`}
+                    >
+                        {isLoading ? 'Verifying...' : 'Sign In'}
                     </button>
                     <button type="button" onClick={() => { setStep(1); setError(''); setOtp('')}} className="w-full text-center text-sm text-gray-600 hover:underline">
                         Change phone number

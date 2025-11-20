@@ -1,9 +1,9 @@
+
 import React, { useContext } from 'react';
 import Header from '../components/Header';
 import { CartContext } from '../context/CartContext';
-import { type Product } from '../types';
+import { type Product, type View } from '../types';
 import { CloseIcon } from '../constants';
-import { type View } from '../App';
 
 interface CartScreenProps {
   onBack: () => void;

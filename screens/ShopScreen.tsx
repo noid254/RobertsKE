@@ -1,9 +1,9 @@
+
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import ProductCard from '../components/ProductCard';
-import { type Product, type RoomCategory } from '../types';
+import { type Product, type RoomCategory, type View } from '../types';
 import { CloseIcon } from '../constants';
-import { type View } from '../App';
 
 interface ShopScreenProps {
   allProducts: Product[];
@@ -11,6 +11,7 @@ interface ShopScreenProps {
   onNavigate: (view: View) => void;
   onToggleSearch: () => void;
   roomCategories: RoomCategory[];
+  onBack?: () => void;
 }
 
 const FilterPanel: React.FC<{
@@ -83,8 +84,19 @@ const MobileFilterModal: React.FC<{
     );
 };
 
+const CategoryBannerBreak: React.FC<{ category: RoomCategory, onNavigate: (view: View) => void }> = ({ category, onNavigate }) => (
+    <div className="col-span-full my-12 relative h-64 rounded-lg overflow-hidden group cursor-pointer" onClick={() => onNavigate({ name: 'category', category })}>
+        <img src={category.hero.imageUrl} alt={category.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white text-center p-4">
+            <h3 className="text-3xl font-bold" style={{fontFamily: "'Playfair Display', serif"}}>{category.hero.title}</h3>
+            <p className="mt-2 text-lg">{category.hero.subtitle}</p>
+            <span className="mt-4 border-b-2 border-white pb-1 text-sm font-semibold">Explore {category.name}</span>
+        </div>
+    </div>
+);
 
-const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, onNavigate, onToggleSearch, roomCategories }) => {
+
+const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, onNavigate, onToggleSearch, roomCategories, onBack }) => {
   const [activeCategory, setActiveCategory] = useState<RoomCategory | null>(null);
   const [activeSubCategory, setActiveSubCategory] = useState('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -106,6 +118,33 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
   }, [activeCategory, activeSubCategory, allProducts]);
   
   const resultsCount = filteredProducts.length;
+
+  // Logic to chunk products and insert banner breaks
+  const renderProductGrid = () => {
+      const chunkSize = 8; // Show 8 products, then a banner
+      const chunks = [];
+      for (let i = 0; i < filteredProducts.length; i += chunkSize) {
+          chunks.push(filteredProducts.slice(i, i + chunkSize));
+      }
+
+      return chunks.map((chunk, index) => (
+          <React.Fragment key={index}>
+              {/* Render Product Chunk */}
+              {chunk.map(product => (
+                  <ProductCard key={product.id} product={product} onClick={() => onProductClick(product)} />
+              ))}
+              
+              {/* Render Banner Break if it's not the last chunk and we have a matching category */}
+              {/* If a category is selected, show other categories. If no category selected, show any. */}
+              {index < chunks.length - 1 && (
+                  <CategoryBannerBreak 
+                      category={roomCategories[index % roomCategories.length]} 
+                      onNavigate={onNavigate} 
+                  />
+              )}
+          </React.Fragment>
+      ));
+  };
 
   return (
     <>
@@ -131,6 +170,7 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
         isSticky={true}
         onNavigate={onNavigate}
         onToggleSearch={onToggleSearch}
+        onBack={onBack}
       />
 
       <main className="pt-16 lg:pt-20">
@@ -165,14 +205,12 @@ const ShopScreen: React.FC<ShopScreenProps> = ({ allProducts, onProductClick, on
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-6 lg:gap-x-6 lg:gap-y-10">
-                    {filteredProducts.map(product => (
-                        <ProductCard key={product.id} product={product} onClick={() => onProductClick(product)} />
-                    ))}
-                    {resultsCount === 0 && (
-                        <p className="col-span-2 md:col-span-3 text-center text-gray-500 py-16">
-                            No products found matching your criteria.
-                        </p>
-                    )}
+                        {renderProductGrid()}
+                        {resultsCount === 0 && (
+                            <p className="col-span-2 md:col-span-3 text-center text-gray-500 py-16">
+                                No products found matching your criteria.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

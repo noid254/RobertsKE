@@ -1,14 +1,17 @@
+
 import React, { createContext, useState, useEffect } from 'react';
 import { type User, type AuthContextType } from '../types';
 import { USERS } from '../constants';
+import { sendOtp, verifyOtp } from '../api';
 
 export const AuthContext = createContext<AuthContextType>({
     user: null,
     isAuthenticated: false,
-    login: (phone, otp) => false,
+    login: async (phone, otp) => false,
     logout: () => {},
-    signup: (details) => false,
+    signup: async (details) => false,
     updateUserRole: (phone, role) => {},
+    requestOtp: async (phone) => false,
 });
 
 // Mock user database stored in localStorage for simulation
@@ -76,13 +79,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [usersDB]);
 
-    const login = (phone: string, otp: string): boolean => {
+    const requestOtpHandler = async (phone: string): Promise<boolean> => {
+        // Call the API to send OTP
+        return await sendOtp(phone);
+    };
+
+    const login = async (phone: string, otp: string): Promise<boolean> => {
         const foundUser = usersDB.find(u => u.phone === phone);
         if (!foundUser) return false;
 
-        const correctOtp = (foundUser.phone === '+254723119356') ? '3232' : '1234';
+        // Call API to verify OTP
+        const isValid = await verifyOtp(phone, otp);
         
-        if (otp === correctOtp) {
+        if (isValid) {
             setUser(foundUser);
             setIsAuthenticated(true);
             window.localStorage.setItem('roberts-user-session', JSON.stringify(foundUser));
@@ -98,12 +107,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         window.localStorage.removeItem('roberts-user-session');
     };
     
-    const signup = (details: Omit<User, 'role' | 'bio' | 'avatarUrl'>): boolean => {
+    const signup = async (details: Omit<User, 'role' | 'bio' | 'avatarUrl'>): Promise<boolean> => {
         const userExists = usersDB.some(u => u.phone === details.phone);
         if (userExists) {
             alert('A user with this phone number already exists.');
             return false;
         }
+        
+        // In a real scenario, we verify OTP before creating the user. 
+        // Assuming signup is called after successful OTP verification in the UI flow.
+
         const newUser: User = { 
             ...details, 
             role: 'customer',
@@ -125,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, signup, updateUserRole }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout, signup, updateUserRole, requestOtp: requestOtpHandler }}>
             {children}
         </AuthContext.Provider>
     );
